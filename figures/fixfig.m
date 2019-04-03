@@ -1,9 +1,16 @@
-function fixfig(handle)
+function fixfig(handle,boolMakeActive)
 	
-	if nargin < 1
+	%inputs
+	if ~exist('handle','var') || isempty(handle)
 		handle=gcf;
 	end
-	figure(handle);
+	if ~exist('boolMakeActive','var') || isempty(boolMakeActive)
+		boolMakeActive=true;
+	end
+	
+	if boolMakeActive
+		figure(handle);
+	end
 	
 	dblFontSize=14; %change the figure font size
 	grid on; %show grid
