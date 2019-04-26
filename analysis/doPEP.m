@@ -106,7 +106,7 @@ function [vecMean,vecSEM] = doPEP(vecTimestamps,vecTraceOrWindow,vecEvents,sOpti
 		figure;
 	end
 	if handleFig == -1
-		return;
+		%do nothing
 	else
 		errorfill(vecWindowBinCenters, vecMean, vecSEM, vecColor);
 	end
