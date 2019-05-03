@@ -2,7 +2,7 @@ function fixfig(handle,boolMakeActive)
 	
 	%inputs
 	if ~exist('handle','var') || isempty(handle)
-		handle=gcf;
+		handle=gca;
 	end
 	if ~exist('boolMakeActive','var') || isempty(boolMakeActive)
 		boolMakeActive=true;
