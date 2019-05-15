@@ -8,8 +8,17 @@ function fixfig(handle,boolMakeActive)
 		boolMakeActive=true;
 	end
 	
+	%check if axes or figure is supplied
+	if isa(handle,'matlab.ui.Figure')
+		if isfield(handle.Children(end),'Axes')
+			handle = handle.Children(end).Axes;
+		else
+			error([mfilename ':HandleIsFig'],'Handle is a figure, not Axes');
+		end
+	end
+		
 	if boolMakeActive
-		figure(handle);
+		axes(handle);
 	end
 	
 	dblFontSize=14; %change the figure font size
