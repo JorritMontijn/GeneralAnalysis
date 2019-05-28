@@ -24,7 +24,7 @@ function matError = gnmnonlinfunc(vecLinCoeffs)
 		else
 			%build code string
 			strArgs = strcat('vecLinCoeffs([',num2str(vecArgs),'])');
-			strEval = strcat(gCellFunctions{intPred},'(matX(:,',num2str(intPred),'),',strArgs,')');
+			strEval = strcat(gCellLinkFunctions{intPred},'(matX(:,',num2str(intPred),'),',strArgs,')');
 			matY(:,intPred) = eval(strEval);
 		end
 	end

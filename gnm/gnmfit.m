@@ -59,7 +59,7 @@ function [cellCoeffs,matX,cellFunctions,vecLinCoeffs,vecLinCoeffFunctions] = gnm
 	%2019-05-22 Created gnmfit function [by Jorrit Montijn]
 	
 	%% set globals
-	global gCellLinkFunctions;
+	global gCellFunctions;
 	global gVecLinCoeffFunctions;
 	global gMatX;
 	global gVecY;
@@ -154,7 +154,7 @@ function [cellCoeffs,matX,cellFunctions,vecLinCoeffs,vecLinCoeffFunctions] = gnm
 	end
 	
 	%update global link functions
-	gCellLinkFunctions = cellFunctions;
+	gCellFunctions = cellFunctions;
 	gVecLinCoeffFunctions = vecLinCoeffFunctions;
 	gMatX = matX;
 	gVecY = vecY;

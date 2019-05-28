@@ -1,14 +1,14 @@
-function vecYhat = gnmlinfunc(vecLinCoeffs,matX,cellFunctions,vecLinCoeffFunctions)
+function vecYhat = gnmlinfunc(vecLinCoeffs,matX,cellLinkFunctions,vecLinCoeffFunctions)
 	%gnmlinfunc Wrapper for lsqcurvefit()
-	%   vecYhat = gnmlinfunc(vecLinCoeffs,matX,cellFunctions,vecLinCoeffFunctions);
+	%   vecYhat = gnmlinfunc(vecLinCoeffs,matX);
 	%
 	%vecYhat is summed contribution of all predictors into [n x 1] vector,
 	%where n is the number of observations
 	
 	%% get globals
-	if nargin < 3 || isempty(cellFunctions)
-		global gCellFunctions;
-		cellFunctions = gCellFunctions;
+	if nargin < 3 || isempty(cellLinkFunctions)
+		global gCellLinkFunctions;
+		cellLinkFunctions = gCellLinkFunctions;
 	end
 	if nargin < 4 || isempty(vecLinCoeffFunctions)
 		global gVecLinCoeffFunctions;
@@ -21,11 +21,11 @@ function vecYhat = gnmlinfunc(vecLinCoeffs,matX,cellFunctions,vecLinCoeffFunctio
 		%get arguments
 		vecArgs = find(vecLinCoeffFunctions==intPred);
 		%check if constant
-		if strcmpi(cellFunctions{intPred},'constant')
+		if strcmpi(cellLinkFunctions{intPred},'constant')
 			vecYhat = vecYhat + vecLinCoeffs(vecArgs);
-		elseif strfind(cellFunctions{intPred},'_mult')
-			intCutOff = strfind(cellFunctions{intPred},'_mult');
-			strFunc = cellFunctions{intPred}(1:(intCutOff-1));
+		elseif strfind(cellLinkFunctions{intPred},'_mult')
+			intCutOff = strfind(cellLinkFunctions{intPred},'_mult');
+			strFunc = cellLinkFunctions{intPred}(1:(intCutOff-1));
 			%build code string
 			strArgs = strcat('vecLinCoeffs([',num2str(vecArgs),'])');
 			strEval = strcat(strFunc,'(matX(:,',num2str(intPred),'),',strArgs,')');
@@ -33,7 +33,7 @@ function vecYhat = gnmlinfunc(vecLinCoeffs,matX,cellFunctions,vecLinCoeffFunctio
 		else
 			%build code string
 			strArgs = strcat('vecLinCoeffs([',num2str(vecArgs),'])');
-			strEval = strcat(cellFunctions{intPred},'(matX(:,',num2str(intPred),'),',strArgs,')');
+			strEval = strcat(cellLinkFunctions{intPred},'(matX(:,',num2str(intPred),'),',strArgs,')');
 			vecYhat = vecYhat + eval(strEval);
 		end
 	end
