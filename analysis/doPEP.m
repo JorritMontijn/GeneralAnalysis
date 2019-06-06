@@ -88,6 +88,11 @@ function [vecMean,vecSEM] = doPEP(vecTimestamps,vecTraceOrWindow,vecEvents,sOpti
 			
 			%assign data to matrix
 			vecUsePoints = intStart:intStop;
+			if numel(vecAssignPoints) > numel(vecUsePoints)
+				vecAssignPoints = vecAssignPoints(1:numel(vecUsePoints));
+			elseif numel(vecAssignPoints) < numel(vecUsePoints)
+				vecUsePoints = vecUsePoints(1:numel(vecAssignPoints));
+			end
 			matPET(intEvent,vecAssignPoints) = vecTraceOrWindow(vecUsePoints);
 		end
 		

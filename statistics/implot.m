@@ -40,6 +40,9 @@ function implot(matData,vecScale,matColormap,dblLineWidth)
 	%bin input & plot
 	hold on;
 	for intBin=1:intValues
+		if intValues == 2 && intBin == 1
+			continue;
+		end
 		vecColor = matColormap(intBin,:);
 		dblThisMin = vecBin(intBin);
 		dblThisMax = vecBin(intBin+1);
