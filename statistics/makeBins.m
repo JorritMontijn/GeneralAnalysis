@@ -27,14 +27,16 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 	%	Added pre-allocation and updated variable names [by JM]
 	
 	%pre-allocate
+	if isvector(vecY),vecY=vecY(:);end
 	intBinVals = length(vecBins);
-	vecCounts = nan(1,intBinVals-1);
-	vecMeans = nan(1,intBinVals-1);
-	vecSDs = nan(1,intBinVals-1);
+	vecCounts = nan(intBinVals-1,1);
+	vecMeans = nan(intBinVals-1,size(vecY,2));
+	vecSDs = nan(intBinVals-1,size(vecY,2));
 	cellVals = cell(1,intBinVals-1);
 	cellIDs = cell(1,intBinVals-1);
 	
 	%run binning
+	ptrTic = tic;
 	for intBin=1:intBinVals-1
 		intBinMax = vecBins(intBin+1);
 		intBinMin = vecBins(intBin);
@@ -42,11 +44,17 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 		vecValIndexOverMin = vecX > intBinMin;
 		vecValIndexThisBin = vecValIndexUnderMax & vecValIndexOverMin;
 		
-		vecTheseVals = vecY(vecValIndexThisBin);
-		vecCounts(intBin) = length(vecTheseVals);
-		vecMeans(intBin) = nanmean(vecTheseVals);
-		vecSDs(intBin) = nanstd(vecTheseVals);
+		vecTheseVals = vecY(vecValIndexThisBin,:);
+		vecCounts(intBin,:) = size(vecTheseVals,1);
+		vecMeans(intBin,:) = nanmean(vecTheseVals);
+		vecSDs(intBin,:) = nanstd(vecTheseVals);
 		cellVals{intBin} = vecTheseVals;
 		cellIDs{intBin} = find(vecValIndexThisBin);
+		
+		%msg
+		if toc(ptrTic) > 5
+			fprintf('Binning... Now at bin %d/%d [%s]\n',intBin,intBinVals,getTime);
+			ptrTic = tic;
+		end
 	end
 end
