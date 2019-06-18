@@ -112,7 +112,8 @@ function sOut = getClusterQuality(vecSpikeTimes,vecStimOnTime,boolMakePlots)
 		%plot raster
 		subplot(2,2,2);
 		plotRaster(vecSpikeTimes,vecStimOnTime)
-
+		title(sprintf('Non-stationarity index: %.3f',dblNonstationarityIndex));
+		
 		%plot shuffled ISI
 		vecMeans = mean(matShuffledISI,1);
 		vecSD = std(matShuffledISI,[],1);
@@ -121,7 +122,6 @@ function sOut = getClusterQuality(vecSpikeTimes,vecStimOnTime,boolMakePlots)
 		ylim([0 max(get(gca,'ylim'))]);
 		xlabel('Inter-spike interval (ms)');
 		ylabel('Number of spikes (count)');
-		title(sprintf('Non-stationarity index: %.3f',dblNonstationarityIndex));
 		fixfig;
 		
 		%plot non-stationarity
