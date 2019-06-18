@@ -14,6 +14,7 @@ function plotRaster(vecSpikes,vecTrialStarts)
 	vecSortedSpikes = sort(vecSpikes,'ascend');
 	vecSpikeInTrial = nan(size(vecSpikes));
 	vecTimeInTrial = nan(size(vecSpikes));
+	dblTrialDur = median(diff(vecTrialStarts));
 	for intSpike=1:numel(vecSpikes)
 		%% build trial assignment
 		vecSpikeInTrial(intSpike) = sum(vecTrialStarts < vecSortedSpikes(intSpike));
@@ -29,6 +30,7 @@ function plotRaster(vecSpikes,vecTrialStarts)
 	hold all;
 	for intTrial=1:numel(vecTrialStarts)
 		vecTimes = vecTimeInTrial(vecSpikeInTrial==intTrial);
+		vecTimes(vecTimes>dblTrialDur)=[];
 		line([vecTimes(:)';vecTimes(:)'],[intTrial*ones(1,numel(vecTimes))-0.5;intTrial*ones(1,numel(vecTimes))+0.5],'Color','k','LineWidth',1.5);
 	end
 	hold off
