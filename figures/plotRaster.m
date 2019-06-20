@@ -36,6 +36,8 @@ function plotRaster(vecSpikes,vecTrialStarts)
 	hold off
 	
 	%set fig props
+	ylim([0 numel(vecTrialStarts)]);
+	xlim([0 dblTrialDur]);
 	xlabel('Time from trial start (s)');
 	ylabel('Trial #');
 	fixfig;
