@@ -100,32 +100,27 @@ function sOut = getClusterQuality(vecSpikeTimes,vecStimOnTime,boolMakePlots)
 		figure(gcf);
 		drawnow;
 		
-		%plot ISI
+		%plot raster
 		subplot(2,2,1);
+		plotRaster(vecSpikeTimes,vecStimOnTime)
+		title(sprintf('Non-stationarity index: %.3f',dblNonstationarityIndex));
+		
+		%plot ISI
+		vecMeans = mean(matShuffledISI,1);
+		vecSD = std(matShuffledISI,[],1);
+		subplot(2,2,2);
+		hold on
 		stairs(vecPlot*1000,vecCountsISI);
+		errorbar(vecPlot*1000,vecMeans,vecSD,'Color','r')
+		hold off
 		ylim([0 max(get(gca,'ylim'))]);
 		xlabel('Inter-spike interval (ms)');
 		ylabel('Number of spikes (count)');
 		title(sprintf('ISI violation index, 1ms=%.3f (Z=%.3f), 2ms=%.3f (Z=%.3f)',dblViolIdx1ms,dblZ1ms,dblViolIdx2ms,dblZ2ms));
 		fixfig;
 		
-		%plot raster
-		subplot(2,2,2);
-		plotRaster(vecSpikeTimes,vecStimOnTime)
-		title(sprintf('Non-stationarity index: %.3f',dblNonstationarityIndex));
-		
-		%plot shuffled ISI
-		vecMeans = mean(matShuffledISI,1);
-		vecSD = std(matShuffledISI,[],1);
-		subplot(2,2,3);
-		errorbar(vecPlot*1000,vecMeans,vecSD)
-		ylim([0 max(get(gca,'ylim'))]);
-		xlabel('Inter-spike interval (ms)');
-		ylabel('Number of spikes (count)');
-		fixfig;
-		
 		%plot non-stationarity
-		subplot(2,2,4);
+		subplot(2,2,3);
 		vecLimX = [0 numel(vecSortedSpikeTimes)];
 		vecLimY = [0 vecSortedSpikeTimes(end)];
 		hold on
@@ -133,11 +128,12 @@ function sOut = getClusterQuality(vecSpikeTimes,vecStimOnTime,boolMakePlots)
 		plot(vecSortedSpikeTimes,'Color',lines(1));
 		hold off
 		xlabel('Spike #');
-		ylabel('Time (s)');
+		ylabel('Time in recording (s)');
 		xlim(vecLimX);
 		ylim(vecLimY);
 		fixfig;
 		grid off;
+		
 	end
 	
 	%% save

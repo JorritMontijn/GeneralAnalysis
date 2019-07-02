@@ -22,10 +22,13 @@ function fixfig(handle,boolMakeActive)
 	end
 	
 	dblFontSize=14; %change the figure font size
-	grid(handle,'on'); %show grid
-	xlabel(get(get(handle,'xlabel'), 'String'),'FontSize',dblFontSize); %set x-label and change font size
-	ylabel(get(get(handle,'ylabel'), 'String'),'FontSize',dblFontSize);%set y-label and change font size
-
+	try 
+		grid(handle,'on'); %show grid
+		xlabel(get(get(handle,'xlabel'), 'String'),'FontSize',dblFontSize); %set x-label and change font size
+		ylabel(get(get(handle,'ylabel'), 'String'),'FontSize',dblFontSize);%set y-label and change font size
+	catch
+		%not a cartesian plot
+	end
 	title(get(get(handle,'title'),'string'),'FontSize',14);
 	set(handle,'FontSize',dblFontSize,'Linewidth',2); %set grid line width and change font size of x/y ticks
 	set(handle,'TickDir', 'out');

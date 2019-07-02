@@ -9,27 +9,14 @@ function plotRaster(vecSpikes,vecTrialStarts)
 	%1.0 - June 18 2019
 	%	Created by Jorrit Montijn
 	
-	
-	%sort spikes
-	vecSortedSpikes = sort(vecSpikes,'ascend');
-	vecSpikeInTrial = nan(size(vecSpikes));
-	vecTimeInTrial = nan(size(vecSpikes));
+	%get spike times in trials
+	[vecTrialPerSpike,vecTimePerSpike] = getSpikesInTrial(vecSpikes,vecTrialStarts);
 	dblTrialDur = median(diff(vecTrialStarts));
-	for intSpike=1:numel(vecSpikes)
-		%% build trial assignment
-		vecSpikeInTrial(intSpike) = sum(vecTrialStarts < vecSortedSpikes(intSpike));
-		if vecSpikeInTrial(intSpike) > 0
-			dblRemTime = vecTrialStarts(vecSpikeInTrial(intSpike));
-		else
-			dblRemTime = 0;
-		end
-		vecTimeInTrial(intSpike) = vecSortedSpikes(intSpike) - dblRemTime;
-	end
 	
 	%plot per trial
 	hold all;
 	for intTrial=1:numel(vecTrialStarts)
-		vecTimes = vecTimeInTrial(vecSpikeInTrial==intTrial);
+		vecTimes = vecTimePerSpike(vecTrialPerSpike==intTrial);
 		vecTimes(vecTimes>dblTrialDur)=[];
 		line([vecTimes(:)';vecTimes(:)'],[intTrial*ones(1,numel(vecTimes))-0.5;intTrial*ones(1,numel(vecTimes))+0.5],'Color','k','LineWidth',1.5);
 	end
