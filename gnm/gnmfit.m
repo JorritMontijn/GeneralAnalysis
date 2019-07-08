@@ -112,7 +112,10 @@ function [cellCoeffs,matX,cellFunctions,vecLinCoeffs,vecLinCoeffFunctions] = gnm
 	end
 	
 	%% set optim options
-	sOptimOptions = optimoptions(strSolver,'MaxFunEvals',1000,'MaxIter',1000,'Display','off');
+	sOptimOptions = struct;
+	sOptimOptions.MaxFunEvals = 1000;
+	sOptimOptions.MaxIter = 1000;
+	sOptimOptions.Display = 'off';
 	if exist('sOpt','var') && isstruct(sOpt)
 		sOptimOptions = catstruct(sOptimOptions,sOpt);
 	end
@@ -161,7 +164,8 @@ function [cellCoeffs,matX,cellFunctions,vecLinCoeffs,vecLinCoeffFunctions] = gnm
 	
 	%% run fit
 	if strcmpi(strSolver,'lsqcurvefit')
-	vecLinCoeffs = lsqcurvefit('gnmlinfunc', vecLinCoeffs0, matX, vecY,vecLinCoeffsLB,vecLinCoeffsUB,sOptimOptions);
+		%vecLinCoeffs = lsqcurvefit('gnmlinfunc', vecLinCoeffs0, matX, vecY,vecLinCoeffsLB,vecLinCoeffsUB,sOptimOptions);
+		vecLinCoeffs = curvefitfun('gnmlinfunc', vecLinCoeffs0, matX, vecY,vecLinCoeffsLB,vecLinCoeffsUB,sOptimOptions);
 	elseif strcmpi(strSolver,'lsqnonlin')
 		vecLinCoeffs = lsqnonlin('gnmnonlinfunc', vecLinCoeffs0,vecLinCoeffsLB,vecLinCoeffsUB,sOptimOptions);
 	elseif strcmpi(strSolver,'fminsearch')
