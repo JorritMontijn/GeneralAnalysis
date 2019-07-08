@@ -59,7 +59,7 @@ function [vecMean,vecSEM,vecWindowBinCenters,matPET] = doPEP(vecTimestamps,vecTr
 		%get event times
 		intEvents = numel(vecEvents);
 		vecEventStarts = vecWindow(1) + vecEvents;
-		vecEventStops = vecWindow(2) + vecEvents;
+		vecEventStops = vecWindow(end) + vecEvents;
 		
 		%get window variables
 		intWindowSize = 1 + find(vecTimestamps >= vecEventStops(2),1) - find(vecTimestamps >= vecEventStarts(2),1);

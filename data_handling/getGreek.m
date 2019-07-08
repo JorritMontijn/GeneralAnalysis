@@ -1,7 +1,15 @@
 function strGreek = getGreek(intChar,strUpLow)
 	%getGreek Get Greek letter; 1=alpha,25=omega
-	%   strGreek = getGreek(intChar,strUpLow)
+	%   strGreek = getGreek(intChar,strUpLow); e.g., "getGreek(1,'lower')"
+	%OR:
+	%   strGreek = getGreek(strChar,strUpLow); e.g., "getGreek('rho','upper')"
 	
+	if ischar(intChar)
+		cellNames = {'alpha','beta','gamma','delta','epsilon','zeta','eta',...
+			'theta','iota','kappa','lambda','mu','nu','xi','omicron','pi',...
+			'rho','sigma','tau','upsilon','phi','chi','psi','omega'};
+		intChar = find(ismember(cellNames,lower(intChar)));
+	end
 	if ~exist('strUpLow','var')
 		strUpLow = 'upper';
 	end

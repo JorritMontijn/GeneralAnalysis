@@ -1,8 +1,9 @@
-function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsiveness(vecSpikeTimes,vecTrialStarts,boolPlot,dblUseMaxDur,intShuffNum,intFoldK)
-	%getVisualResponsiveness Calculates reliability of visual response as Cohen's d across trials
-	%syntax: [dblZ,dblHzD,vecInterpT,vecZ,matDiffTest,dblP] = getVisualResponsiveness(vecSpikeTimes,vecTrialStarts,boolPlot,dblUseMaxDur)
+function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenessTrace(vecTimestamps,vecTrace,vecTrialStarts,boolPlot,dblUseMaxDur,intShuffNum,intFoldK)
+	%getVisualResponsivenessTrace Calculates reliability of visual response as z-score across trials
+	%syntax: [dblZ,dblP,matDiffTest,dblHzD] = getVisualResponsiveness(vecSpikeTimes,vecTrialStarts,boolPlot,dblUseMaxDur)
 	%	input:
-	%	- vecSpikeTimes [S x 1]: spike times (s)
+	%	- vecTimestamps [N x 1]: timestamps corresponding to values in vecTrace
+	%	- vecTrace [N x 1]: activation level for each observation
 	%	- vecTrialStarts [T x 1]: stimulus on times (s), or [T x 2] including stimulus off times
 	%	- boolPlot: boolean, set to true to plot output (default: false)
 	%	- dblUseMaxDur: float (s), ignore all spikes beyond this duration after stimulus onset
@@ -19,20 +20,36 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 	%	- dblP: p-value corresponding to z-score
 	%
 	%Version history:
-	%1.0 - June 27 2019
+	%1.0 - July 8 2019
 	%	Created by Jorrit Montijn
 	
 	%% prep data
+	%check data format
+	if size(vecTimestamps,1) == 1
+		warning([mfilename ':RotatingData'],'vecTimestamps is a row vector; transposing to column vector');
+		vecTimestamps = vecTimestamps';
+	end
+	if size(vecTrace,1) == 1
+		warning([mfilename ':RotatingData'],'vecTrace is a row vector; transposing to column vector');
+		vecTrace = vecTrace';
+	end
+	if size(vecTrialStarts,2) > 2
+		warning([mfilename ':RotatingData'],'TrialStarts is probably rotated; transposing now');
+	end
+	
 	%get boolPlot
 	if ~exist('boolPlot','var') || isempty(boolPlot)
 		boolPlot = false;
 	end
 	
 	%get spike times in trials
-	[vecTrialPerSpike,vecTimePerSpike] = getSpikesInTrial(vecSpikeTimes,vecTrialStarts(:,1));
+	dblSamplingFreq = median(diff(vecTimestamps));
 	if ~exist('dblUseMaxDur','var') || isempty(dblUseMaxDur)
 		dblUseMaxDur = median(diff(vecTrialStarts(:,1)));
 	end
+	
+	%transform to common timeframe
+	[vecInterpT,matTracePerTrial] = getTraceInTrial(vecTimestamps,vecTrace,vecTrialStarts(:,1),dblSamplingFreq,dblUseMaxDur);
 	
 	%get boolPlot
 	if ~exist('intShuffNum','var') || isempty(intShuffNum)
@@ -49,26 +66,17 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 	dblHzD = nan;
 	if size(vecTrialStarts,2) == 2
 		boolActDiff = true;
-		vecStimDur = vecTrialStarts(:,2) - vecTrialStarts(:,1);
+		vecStimDurInObs = round((vecTrialStarts(:,2) - vecTrialStarts(:,1)) / dblSamplingFreq);
 	end
 	
-	%calculate cross-validated R^2 of visual responses across trial repetitions
-	indUseSpikes = vecTrialPerSpike>0 & vecTimePerSpike < dblUseMaxDur;
-	vecUseSpikeTimes = vecTimePerSpike(indUseSpikes);
-	vecUseSpikeTrials = vecTrialPerSpike(indUseSpikes);
-	
 	%% k-fold data split
-	intObs = numel(vecUseSpikeTimes);
-	intMaxRep = max(vecUseSpikeTrials);
-	vecRepsPerFold = floor(intMaxRep / intFoldK)*ones(intFoldK,1);
-	intRemainder = mod(intMaxRep,intFoldK);
+	intInterp = numel(vecInterpT);
+	intTrialNum = size(matTracePerTrial,1);
+	vecRepsPerFold = floor(intTrialNum / intFoldK)*ones(intFoldK,1);
+	intRemainder = mod(intTrialNum,intFoldK);
 	vecRepsPerFold(1:intRemainder) = vecRepsPerFold(1:intRemainder) + 1;
 	vecFoldRepStart = cumsum(vecRepsPerFold) - vecRepsPerFold(1) + 1;
 	vecFoldRepEnd = cumsum(vecRepsPerFold);
-	
-	%% prepare interpolation points
-	vecInterpT = unique(sort(vecUseSpikeTimes,'ascend'));
-	intInterp = numel(vecInterpT);
 	
 	%% run k-folds & shuffles
 	%pre-allocate
@@ -81,7 +89,7 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 	%run shuffles
 	intIter=0;
 	for intShuffIter=1:intShuffNum
-		vecShuffledReps = randperm(intMaxRep);
+		vecShuffledReps = randperm(intTrialNum);
 		
 		%run folds
 		for intThisFold=1:intFoldK
@@ -92,18 +100,11 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 			vecTestReps = vecShuffledReps(vecFoldRepStart(intThisFold):vecFoldRepEnd(intThisFold));
 			
 			%get observations
-			vecTestObs = ismember(vecUseSpikeTrials,vecTestReps);
-			
-			%get spikes
-			vecTestSpikes = unique(vecUseSpikeTimes(vecTestObs));
-			
-			%get real fractions for training set
-			vecTestSpikeTimes = sort([0;vecTestSpikes(:);dblUseMaxDur],'ascend')';
-			vecTestSpikeFracs = linspace(0,1,numel(vecTestSpikeTimes));
-			vecTestFracInterp = interp1(vecTestSpikeTimes,vecTestSpikeFracs,vecInterpT);
+			vecMeanTrace = nanmean(matTracePerTrial(vecTestReps,:),1);
+			vecTestFracInterp = cumsum(vecMeanTrace) / sum(vecMeanTrace);
 			
 			%get linear fractions
-			vecPredictedFractionFromLinear = vecInterpT./dblUseMaxDur;
+			vecPredictedFractionFromLinear = vecInterpT./vecInterpT(end);
 			
 			%assign data
 			matDiffTest(:,intIter) = vecTestFracInterp - vecPredictedFractionFromLinear;
@@ -116,14 +117,13 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 				for intStim=1:intTestNum
 					%get test trial and spikes
 					intTestTrial = vecTestReps(intStim);
-					vecTempSpikes = vecUseSpikeTimes(vecUseSpikeTrials==intTestTrial);
+					vecTempTrace = matTracePerTrial(intTestTrial,:);
 					%calculate stim times for this trial
-					dblStimOff = vecStimDur(intTestTrial);
-					dblPostStimDur = dblUseMaxDur - dblStimOff;
+					intStimOff = vecStimDurInObs(intTestTrial);
 					
 					%assign data
-					vecStimHz(intStim) = sum(vecTempSpikes < dblStimOff)/dblStimOff;
-					vecBaseHz(intStim) = sum(vecTempSpikes > dblStimOff)/dblPostStimDur;
+					vecBaseHz(intStim) = mean(vecTempTrace((intStimOff+1):end));
+					vecStimHz(intStim) = mean(vecTempTrace(1:intStimOff));
 				end
 				%save data
 				vecStimAct(intIter) = mean(vecStimHz);
@@ -167,7 +167,8 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 		subplot(2,3,1)
 		sOpt = struct;
 		sOpt.handleFig =-1;
-		[vecMean,vecSEM,vecWindowBinCenters] = doPEP(vecSpikeTimes,0:0.1:dblUseMaxDur,vecTrialStarts(:,1),sOpt);
+		sOpt.vecWindow = [0 dblUseMaxDur];
+		[vecMean,vecSEM,vecWindowBinCenters] = doPEP(vecTimestamps,vecTrace,vecTrialStarts(:,1),sOpt);
 		errorbar(vecWindowBinCenters,vecMean,vecSEM);
 		ylim([0 max(get(gca,'ylim'))]);
 		title(sprintf('Mean spiking over trials'));
