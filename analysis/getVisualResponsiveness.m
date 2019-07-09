@@ -141,7 +141,11 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 	vecUseZ(~indKeep) = 0;
 	
 	%get max values & remove first and last peaks
-	[vecAllVals,vecAllPeakLocs]= findpeaks(vecUseZ);
+	[vecPosVals,vecPosPeakLocs]= findpeaks(vecUseZ);
+	[vecNegVals,vecNegPeakLocs]= findpeaks(-vecUseZ);
+	vecAllVals = cat(1,vecPosVals,vecNegVals);
+	vecAllPeakLocs = cat(1,vecPosPeakLocs,vecNegPeakLocs);
+	
 	%find highest peak and retrieve value
 	[dummy,intLoc]= max(abs(vecAllVals));
 	intInterpLoc = vecAllPeakLocs(intLoc);
