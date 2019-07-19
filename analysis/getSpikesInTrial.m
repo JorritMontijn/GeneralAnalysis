@@ -11,18 +11,17 @@ function [vecTrialPerSpike,vecTimePerSpike] = getSpikesInTrial(vecSpikes,vecTria
 	
 	
 	%sort spikes
-	vecSortedSpikes = sort(vecSpikes,'ascend');
 	vecTrialPerSpike = nan(size(vecSpikes));
 	vecTimePerSpike = nan(size(vecSpikes));
 	for intSpike=1:numel(vecSpikes)
 		%% build trial assignment
-		vecTrialPerSpike(intSpike) = sum(vecTrialStarts < vecSortedSpikes(intSpike));
+		vecTrialPerSpike(intSpike) = sum(vecTrialStarts < vecSpikes(intSpike));
 		if vecTrialPerSpike(intSpike) > 0
 			dblRemTime = vecTrialStarts(vecTrialPerSpike(intSpike));
 		else
 			dblRemTime = 0;
 		end
-		vecTimePerSpike(intSpike) = vecSortedSpikes(intSpike) - dblRemTime;
+		vecTimePerSpike(intSpike) = vecSpikes(intSpike) - dblRemTime;
 	end
 	
 end

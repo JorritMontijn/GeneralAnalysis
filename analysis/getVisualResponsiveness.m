@@ -133,14 +133,14 @@ function [dblZ,vecInterpT,vecZ,matDiffTest,dblHzD,dblP] = getVisualResponsivenes
 	end
 	
 	%% calculate measure of effect size, for equal n, d' = Cohen's d
-	%get z-score
+	%get z-score & remove first and last values
 	vecZ = mean(matDiffTest,2) ./ std(matDiffTest,[],2);
 	dblRemEdgeSecs = 0.02;
 	indKeep = vecInterpT > dblRemEdgeSecs & vecInterpT < (dblUseMaxDur-dblRemEdgeSecs);
 	vecUseZ = vecZ;
 	vecUseZ(~indKeep) = 0;
 	
-	%get max values & remove first and last peaks
+	%get max & min values
 	[vecPosVals,vecPosPeakLocs]= findpeaks(vecUseZ);
 	[vecNegVals,vecNegPeakLocs]= findpeaks(-vecUseZ);
 	vecAllVals = cat(1,vecPosVals,vecNegVals);

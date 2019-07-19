@@ -28,6 +28,8 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 	
 	%pre-allocate
 	if isvector(vecY),vecY=vecY(:);end
+	vecX = vecX(:);
+	vecBins = vecBins(:);
 	intBinVals = length(vecBins);
 	vecCounts = nan(intBinVals-1,1);
 	vecMeans = nan(intBinVals-1,size(vecY,2));
@@ -35,26 +37,36 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 	cellVals = cell(1,intBinVals-1);
 	cellIDs = cell(1,intBinVals-1);
 	
-	%run binning
-	ptrTic = tic;
-	for intBin=1:intBinVals-1
-		intBinMax = vecBins(intBin+1);
-		intBinMin = vecBins(intBin);
-		vecValIndexUnderMax = vecX < intBinMax;
-		vecValIndexOverMin = vecX > intBinMin;
-		vecValIndexThisBin = vecValIndexUnderMax & vecValIndexOverMin;
-		
-		vecTheseVals = vecY(vecValIndexThisBin,:);
-		vecCounts(intBin,:) = size(vecTheseVals,1);
-		vecMeans(intBin,:) = nanmean(vecTheseVals);
-		vecSDs(intBin,:) = nanstd(vecTheseVals);
-		cellVals{intBin} = vecTheseVals;
-		cellIDs{intBin} = find(vecValIndexThisBin);
-		
-		%msg
-		if toc(ptrTic) > 5
-			fprintf('Binning... Now at bin %d/%d [%s]\n',intBin,intBinVals,getTime);
-			ptrTic = tic;
+	%% run slow binning, v2
+	if nargout > 2
+		ptrTic = tic;
+		for intBin=1:intBinVals-1
+			intBinMax = vecBins(intBin+1);
+			intBinMin = vecBins(intBin);
+			vecValIndexUnderMax = vecX < intBinMax;
+			vecValIndexOverMin = vecX > intBinMin;
+			vecValIndexThisBin = vecValIndexUnderMax & vecValIndexOverMin;
+			
+			vecTheseVals = vecY(vecValIndexThisBin,:);
+			vecCounts(intBin,:) = size(vecTheseVals,1);
+			vecMeans(intBin,:) = nanmean(vecTheseVals);
+			vecSDs(intBin,:) = nanstd(vecTheseVals);
+			cellVals{intBin} = vecTheseVals;
+			cellIDs{intBin} = find(vecValIndexThisBin);
+			
+			%msg
+			if toc(ptrTic) > 5
+				fprintf('Binning... Now at bin %d/%d [%s]\n',intBin,intBinVals,getTime);
+				ptrTic = tic;
+			end
 		end
+	else
+		%% run fast binning, v3
+		[vecCounts,~,vecIdx]=histcounts(vecX,vecBins);
+		vecCounts = vecCounts(:);
+		indKeep = vecIdx > 0;
+		vecSums = accumarray(flat(vecIdx(indKeep)),flat(vecY(indKeep)));
+		vecSums((end+1):numel(vecCounts)) = 0;
+		vecMeans = vecSums./vecCounts;
 	end
 end

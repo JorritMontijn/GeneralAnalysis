@@ -14,6 +14,9 @@ function [bcR, p, T, df] = bcdistcorr(x, y)
 	%
 	%   Date: 7.30.2016
 	%   Author: Po-He Tseng (pohetsn@gmail.com)
+	%   Date: 9 July 2019
+	%   Rewrote A* calculation to be faster for large matrices
+	
 	assert(rows(x)==rows(y));
 	n = rows(x);
 	X = Astar(x);
@@ -36,30 +39,42 @@ function XY = modified_distance_covariance(X, Y)
 	XY = sum(sum(bsxfun(@times, X, Y)))...
 		- (n/(n-2))*diag(X)'*diag(Y);
 end
-function A = Astar(x)
-	d = pdist2(x,x);
-	n = rows(x);
-	m = mean(d);
-	M = mean(d(:));
-	% A = d - m'*ones(1,n);
+function matA = Astar(x)
+	%use loop?
+	boolNew = true;
 	
-	%loop
-	size(d)
-	size(m)
-	size(M)
-	%A = zeros(n,n);
-	%for i=1:n
-	%A(
-	%end
-	A = bsxfun(@minus, d, bsxfun(@mtimes, m', ones(1,n)));
-	size(A)
-	% A = A - ones(n,1)*m;
-	A = bsxfun(@minus, A, bsxfun(@mtimes, ones(n,1), m));
+	%get inputs
+	matD = pdist2(x,x); %[n x n]
+	n = rows(x);
+	vecM = mean(matD); %[1 x n]
+	vecTranspM = vecM'; %[n x 1]
+	dblM = mean(matD(:)); %[1 x 1]
+	
+	%calculate A*
+	if boolNew
+		%loops are actually faster
+		matA = ones(n,n);
+		for i=1:n
+			matA(:,i) = matD(:,i) - vecTranspM;
+		end
+		
+		% A = A - ones(n,1)*m;
+		for i=1:n
+			matA(i,:) = matA(i,:) - vecM;
+		end
+		
+		matA = matA + dblM;
+	else
+		%matrix operations require more memory
+		matA = bsxfun(@minus, matD, bsxfun(@mtimes, vecM', ones(1,n)));
+		matA = bsxfun(@minus, matA, bsxfun(@mtimes, ones(n,1), vecM));
+		matA = bsxfun(@plus, matA, dblM);
+	end
 	% A = A + M;
-	A = bsxfun(@plus, A, M);
-	A = A - d/n;
-	A(1:n+1:end) = m - M;
-	A = (n/(n-1))*A;
+	
+	matA = matA - matD/n;
+	matA(1:n+1:end) = vecM - dblM;
+	matA = (n/(n-1))*matA;
 end
 function r = rows(x)
 	r = size(x,1);
