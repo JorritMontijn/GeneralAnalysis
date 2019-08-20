@@ -4,6 +4,7 @@ function y = logisticfitx0(beta,x)
 	%	beta(1) = L (asymptote) [default 1]
 	%	beta(2) = k (slope) [default 1]
 	%	beta(3) = x0 (x-offset) [default 0]
+	%	beta(4) = y0 (y-offset) [default 0]
 	
 	%define parameters
 	if length(beta) < 1, L=1; else L = beta(1);end %asymptote

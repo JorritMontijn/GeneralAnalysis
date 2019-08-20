@@ -1,4 +1,4 @@
-function [bcR, p, T, df] = bcdistcorr(x, y)
+function [bcR, p, T, df] = bcdistcorr2(x, y)
 	% BCDISTCORR computes the bias corrected distance correlation
 	%
 	%   [BCR,P,T,DF] = BCDISTCORR(X,Y), where X (size n-by-p) and Y (size
