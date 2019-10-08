@@ -7,7 +7,7 @@ function strGreek = getGreek(intChar,strUpLow)
 	if ischar(intChar)
 		cellNames = {'alpha','beta','gamma','delta','epsilon','zeta','eta',...
 			'theta','iota','kappa','lambda','mu','nu','xi','omicron','pi',...
-			'rho','sigma','tau','upsilon','phi','chi','psi','omega'};
+			'rho','sigma2','sigma','tau','upsilon','phi','chi','psi','omega'};
 		intChar = find(ismember(cellNames,lower(intChar)));
 	end
 	if ~exist('strUpLow','var')
