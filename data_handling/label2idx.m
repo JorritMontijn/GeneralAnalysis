@@ -14,8 +14,8 @@ function [varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(v
 			indEntries = strcmp(varData,vecUnique{intIdx});
 			cellSelect{intIdx} = indEntries;
 			varDataOut(indEntries) = intIdx;
-			vecCounts(intIdx) = sum(indEntries);
-			vecRepetition(indEntries) = 1:sum(indEntries);
+			vecCounts(intIdx) = sum(indEntries(:));
+			vecRepetition(indEntries) = 1:sum(indEntries(:));
 		end
 	else
 		%numeric vector
@@ -23,8 +23,8 @@ function [varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(v
 			indEntries = varData==vecUnique(intIdx);
 			cellSelect{intIdx} = indEntries;
 			varDataOut(indEntries) = intIdx;
-			vecCounts(intIdx) = sum(indEntries);
-			vecRepetition(indEntries) = 1:sum(indEntries);
+			vecCounts(intIdx) = sum(indEntries(:));
+			vecRepetition(indEntries) = 1:sum(indEntries(:));
 		end
 	end
 end

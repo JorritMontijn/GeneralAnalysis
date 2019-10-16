@@ -32,6 +32,12 @@ function fixfig(handle,boolMakeActive)
 	title(get(get(handle,'title'),'string'),'FontSize',14);
 	set(handle,'FontSize',dblFontSize,'Linewidth',2); %set grid line width and change font size of x/y ticks
 	set(handle,'TickDir', 'out');
-	if ~strcmp(get(get(handle,'Children'),'Type'),'image'),set(get(handle,'Children'),'Linewidth',2);end %change default linewidth to 2
+	if ~strcmp(get(get(handle,'Children'),'Type'),'image')
+		vecChildren = get(handle,'Children');
+		for intChild=1:numel(vecChildren)
+			if isprop(vecChildren(intChild),'Linewidth')
+				set(vecChildren(intChild),'Linewidth',2);end %change default linewidth to 2
+		end
+	end
 end
 
