@@ -25,13 +25,6 @@ function [matCounts,matValMeans,matValSDs,cellVals,cellIDs] = makeBins2(vecValsX
 	%	1.0 - July 12 2019
 	%	Created by Jorrit Montijn, based on makeBins()
 	
-	%% check req out
-	if nargout > 3
-		boolCellVals = true;
-	else
-		boolCellVals = false;
-	end
-	
 	%% pre-alloc
 	intValNumX = (numel(vecEdgesX)-1);
 	intValNumY = (numel(vecEdgesY)-1);
@@ -62,11 +55,9 @@ function [matCounts,matValMeans,matValSDs,cellVals,cellIDs] = makeBins2(vecValsX
 			%assign
 			matCounts(intEdgeY,intEdgeX) = sum(indTheseValsXY);
 			matValMeans(intEdgeY,intEdgeX) = mean(vecTheseZValsXY);
-			matValSDs(intEdgeY,intEdgeX) = std(vecTheseZValsXY);
-			if boolCellVals
-				cellVals{intEdgeY,intEdgeX} = vecTheseZValsXY;
-				cellIDs{intEdgeY,intEdgeX} =  find(vecValsX > dblStartEdgeX & vecValsX < dblStopEdgeX & vecValsY > dblStartEdgeY & vecValsY < dblStopEdgeY);
-			end
+			if nargout > 2,matValSDs(intEdgeY,intEdgeX) = std(vecTheseZValsXY);end
+			if nargout > 3,cellVals{intEdgeY,intEdgeX} = vecTheseZValsXY;end
+			if nargout > 4,cellIDs{intEdgeY,intEdgeX} =  find(vecValsX > dblStartEdgeX & vecValsX < dblStopEdgeX & vecValsY > dblStartEdgeY & vecValsY < dblStopEdgeY);end
 			
 			%msg
 			if toc(ptrTic) > 5
