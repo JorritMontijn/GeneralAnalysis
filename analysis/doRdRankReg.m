@@ -12,7 +12,7 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 	% Make sure matrices are the same length
 	assert(size(matX,1)==size(matY,1), 'X and Y must have the same number of observations.')
 	
-	% Define prima facie constants.
+	% Define constants.
 	intR_of_X = size(matX, 2); %source population size
 	intS_of_Y = size(matY, 2); %target population size
 	intN = size(matX, 1); %samples (trials)
@@ -23,13 +23,13 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 	else
 		intRankT = intRank;
 	end
+	if intRankT > min(intR_of_X, intS_of_Y)
+		error([mfilename ':ReqRankOutOfBounds'],sprintf('Requested rank (%d) is too large',intRankT))
+	end
 	
 	%% compute RRR
-	% Define constants
-	intR_of_X = size(matX, 2);
-	
 	%split covariance matrix into four quadrants;			 %Izenman (1975), eq 2.2
-	full_covariance = cov([matX matY]);
+	full_covariance = cov([matX matY]);% + dblLambda*eye(intR_of_X+intS_of_Y);
 	matSSXX = full_covariance(1:intR_of_X, 1:intR_of_X);
 	matSSYX = full_covariance((intR_of_X+1):end, 1:intR_of_X);
 	matSSXY = full_covariance(1:intR_of_X, (intR_of_X+1):end);
@@ -39,15 +39,23 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 	matGamma = inv(matSSYY);
 	
 	% Define the matrix of eigen-values
-	warning('off','MATLAB:eigs:TooManyRequestedEigsForComplexNonsym');
-	[matV_rr, matD_rr] = eigs(((sqrtm(matGamma)*matSSYX)/matSSXX)*matSSXY*sqrtm(matGamma),intRankT);
-	warning('on','MATLAB:eigs:TooManyRequestedEigsForComplexNonsym');
+	if intRankT < 20
+		[matV_rr,vecD_rr]=eig(((sqrtm(matGamma)*matSSYX)/matSSXX)*matSSXY*sqrtm(matGamma),'vector');
+		[vecD_rr,vecReorder] = sort(vecD_rr,'descend');
+		matD_rr = diag(vecD_rr(1:intRankT));
+		matV_rr = matV_rr(:,vecReorder);
+		matV_rr = matV_rr(:,1:intRankT);
+	else
+		warning('off','MATLAB:eigs:TooManyRequestedEigsForComplexNonsym');
+		[matV_rr, matD_rr] = eigs(((sqrtm(matGamma)*matSSYX)/matSSXX)*matSSXY*sqrtm(matGamma),intRankT);
+		warning('on','MATLAB:eigs:TooManyRequestedEigsForComplexNonsym');
+	end
 	
 	% Define the decomposition and mean matrices
 	matA = sqrtm(inv(matGamma))*matV_rr;					%Izenman (1975), eq 2.5
 	matB = (matV_rr'*sqrtm(matGamma)*matSSYX)/matSSXX;	%Izenman (1975), eq 2.6
-	matMu = mean(matY)' - matA*matB*(mean(matX)');			%Izenman (1975), eq 2.7
 	matW = (matA*matB)';
+	matMu = mean(matY)' - (matW)'*(mean(matX)');			%Izenman (1975), eq 2.7
 	
 	%% get prediction
 	matY_pred = repmat(matMu',[intN 1]) + matX*matW;
