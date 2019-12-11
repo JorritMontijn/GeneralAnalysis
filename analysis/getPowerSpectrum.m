@@ -14,10 +14,10 @@ function [vecFreq,vecPower] = getPowerSpectrum(varData,dblSampFreq,intDim)
 	varFiltered = fft(varData,[],intDim);
 	
 	P2 = abs(varFiltered/intL);
-	vecPower = P2(1:intL/2+1);
+	vecPower = P2(1:floor(intL/2)+1);
 	vecPower(2:end-1) = 2*vecPower(2:end-1);
 	
-	vecFreq = dblSampFreq*(0:(intL/2))/intL;
+	vecFreq = dblSampFreq*(0:floor(intL/2))/intL;
 	%plot(vecFreq,vecPower)
 
 

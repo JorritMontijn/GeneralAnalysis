@@ -5,7 +5,7 @@ function [vecMean,vecSEM,vecWindowBinCenters,matPET] = doPEP(vecTimestamps,vecTr
 	%	- vecTimestamps; timestamps of data in vecTrace (for spikes: spike times)
 	%	- vecTraceOrWindow; trace containing data to be plotted (for spikes: binning edges for window)
 	%	- vecEvents; vector containing events to plot around
-	%	- sOptions, structure containing the following fields:
+	%	- sOptions, structure containing the following fields: (or an axes handle)
 	%		- handleFig; handle to figure (set to -1 to suppress plotting)
 	%		- vecColor; 3-element vector specifying line color
 	%		- vecWindow; 2-element vector specifying which time window in
@@ -28,12 +28,29 @@ function [vecMean,vecSEM,vecWindowBinCenters,matPET] = doPEP(vecTimestamps,vecTr
 	
 	%% get inputs
 	if ~exist('sOptions','var'),sOptions=struct;end
+	if ~isstruct(sOptions) && numel(sOptions) == 1
+		ptrTemp = sOptions;
+		sOptions=struct;
+		sOptions.handleFig = ptrTemp;
+	end
 	if isfield(sOptions,'vecColor'), vecColor = sOptions.vecColor; else, vecColor=[0 0 1]; end
 	if isfield(sOptions,'handleFig'), handleFig = sOptions.handleFig;else, handleFig = [];end
 	
 	
 	%% plot peri-event trace
+	%% input is wrong?
 	if numel(vecTraceOrWindow) < numel(vecTimestamps)
+		intType = 1;
+	elseif numel(vecTraceOrWindow) == numel(vecTimestamps)
+		intType = 2;
+	else
+		intType = 1;
+		
+		warning([mfilename ':WrongSyntax'],'Number of window points is larger than spikes, check syntax is: [vecMean,vecSEM] = doPEP(vecTimestamps,vecTraceOrWindow,vecEvents,sOptions)');
+	end
+	
+	
+	if intType == 1
 		%% input is spike times
 		%get window
 		intWindowSize = numel(vecTraceOrWindow)-1;
@@ -52,7 +69,7 @@ function [vecMean,vecSEM,vecWindowBinCenters,matPET] = doPEP(vecTimestamps,vecTr
 			matPET(intEvent,:) = vecCounts./vecBinDur;
 		end
 		
-	elseif numel(vecTraceOrWindow) == numel(vecTimestamps)
+	elseif intType == 2
 		%% input is trace
 		%get window
 		if isfield(sOptions,'vecWindow'), vecWindow = sOptions.vecWindow;else, vecWindow = [-1 3];end
@@ -95,13 +112,7 @@ function [vecMean,vecSEM,vecWindowBinCenters,matPET] = doPEP(vecTimestamps,vecTr
 			end
 			matPET(intEvent,vecAssignPoints) = vecTraceOrWindow(vecUsePoints);
 		end
-		
-		
-	else
-		%% input is wrong
-		error([mfilename ':WrongSyntax'],'Incorrect input, syntax is: [vecMean,vecSEM] = doPEP(vecTimestamps,vecTraceOrWindow,vecEvents,sOptions)');
 	end
-	
 	%% get mean + sem
 	vecMean = nanmean(matPET,1);
 	vecSEM = nanstd(matPET,[],1)/sqrt(intEvents);
