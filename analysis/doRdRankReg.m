@@ -36,25 +36,32 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 	matSSYY = full_covariance((intR_of_X+1):end, (intR_of_X+1):end);
 	
 	% Define the weighting matrix
-	matGamma = inv(matSSYY);
+	dblCond = rcond(matSSYY);
+	if dblCond > 1e15 || dblCond < 1e-15
+		fprintf('WARNING: Matrix is close to singular or badly scaled. Using pseudo-inverse. Results may be inaccurate. RCOND =  %e.\n',dblCond); 
+		matGamma = pinv(matSSYY);
+	else
+		matGamma = inv(matSSYY);
+	end
+	matSqrt = sqrtm(matGamma);
 	
 	% Define the matrix of eigen-values
 	if intRankT < 20
-		[matV_rr,vecD_rr]=eig(((sqrtm(matGamma)*matSSYX)/matSSXX)*matSSXY*sqrtm(matGamma),'vector');
+		[matV_rr,vecD_rr]=eig(((matSqrt*matSSYX)/matSSXX)*matSSXY*matSqrt,'vector');
 		[vecD_rr,vecReorder] = sort(vecD_rr,'descend');
 		matD_rr = diag(vecD_rr(1:intRankT));
 		matV_rr = matV_rr(:,vecReorder);
 		matV_rr = matV_rr(:,1:intRankT);
 	else
 		warning('off','MATLAB:eigs:TooManyRequestedEigsForComplexNonsym');
-		[matV_rr, matD_rr] = eigs(((sqrtm(matGamma)*matSSYX)/matSSXX)*matSSXY*sqrtm(matGamma),intRankT);
+		[matV_rr, matD_rr] = eigs(((matSqrt*matSSYX)/matSSXX)*matSSXY*matSqrt,intRankT);
 		warning('on','MATLAB:eigs:TooManyRequestedEigsForComplexNonsym');
 	end
 	
 	% Define the decomposition and mean matrices
-	matA = sqrtm(inv(matGamma))*matV_rr;					%Izenman (1975), eq 2.5
-	matB = (matV_rr'*sqrtm(matGamma)*matSSYX)/matSSXX;	%Izenman (1975), eq 2.6
-	matW = (matA*matB)';
+	matA = sqrtm(matSSYY)*matV_rr;					%Izenman (1975), eq 2.5
+	matB = (matV_rr'*matSqrt*matSSYX)/matSSXX;	%Izenman (1975), eq 2.6
+	matW = real((matA*matB)');
 	matMu = mean(matY)' - (matW)'*(mean(matX)');			%Izenman (1975), eq 2.7
 	
 	%% get prediction
@@ -78,7 +85,7 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 		vecMu = mean(matY);
 		dblSSRes = sum(sum(matErr));
 		dblSSTot = sum(sum(bsxfun(@minus,matY,vecMu).^2));
-		dblR2 = 1 - dblSSRes / dblSSTot;
+		dblR2 = 1 - (dblSSRes / dblSSTot);
 		
 		sSuppOut.dblSSRes = dblSSRes;
 		sSuppOut.dblSSTot = dblSSTot;
