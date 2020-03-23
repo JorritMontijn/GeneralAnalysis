@@ -21,7 +21,7 @@ function [vecTime,vecIdx,vecDuration,vecEnergy,vecSlope] = findsustainedpeaks(ve
 	%Note: requires getMultiScaleDeriv.m
 	%
 	%Version history:
-	%1.0 - January 27 2019
+	%1.0 - January 27 2020
 	%	Created by Jorrit Montijn
 	
 	%% check inputs

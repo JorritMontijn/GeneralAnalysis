@@ -78,5 +78,15 @@ function cellPaths = getSubDirs(strMasterPath,intMaxDepth,cellExcludePathName)
 	
 	%remove empty elements from the over-allocated cell array
 	cellPaths = cellPaths(1:intPathCounter);
+	
+	%remove excluded paths
+	indRemove = false(size(cellPaths));
+	for intEntry=1:numel(indRemove)
+		cellSplit = strsplit(cellPaths{intEntry},filesep);
+		if any(ismember(cellSplit,cellExcludePathName))
+			indRemove(intEntry) = true;
+		end
+	end
+	cellPaths(indRemove) = [];
 end
 

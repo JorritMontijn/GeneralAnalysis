@@ -92,6 +92,7 @@ function sOut = getClusterQuality(vecSpikeTimes,boolMakePlots)
 		hold off
 		xlabel('Spike #');
 		ylabel('Time in recording (s)');
+		title(sprintf('Non-stationarity index: %.3f',dblNonstationarityIndex))
 		xlim(vecLimX);
 		ylim(vecLimY);
 		fixfig;

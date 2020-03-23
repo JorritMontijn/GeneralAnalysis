@@ -31,5 +31,9 @@ function matLowHigh = getCI(matSample,intDim,dblAlpha)
 	
 	%put in output
 	matLowHigh = [vecLow(:) vecHigh(:)];
+	
+	
+	
+	
 end
 
