@@ -63,7 +63,7 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 	else
 		%% run fast binning, v3
 		[vecCounts,~,vecIdx]=histcounts(vecX,vecBins);
-		vecCounts = vecCounts(:);
+		vecCounts = vecCounts(:)';
 		indKeep = vecIdx > 0;
 		vecSums = accumarray(flat(vecIdx(indKeep)),flat(vecY(indKeep)));
 		vecSums((end+1):numel(vecCounts)) = 0;
