@@ -50,13 +50,13 @@ function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecP
 	
 	if (isempty(dblMaxPosVal) && isempty(dblMaxNegVal))
 		indPeakMembers = [];
-	elseif (~isempty(dblMaxPosVal) && isempty(dblMaxNegVal)) || (abs(dblMaxPosVal) >= abs(dblMaxNegVal))
+	elseif (~isempty(dblMaxPosVal) && isempty(dblMaxNegVal)) || ((~isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) && (abs(dblMaxPosVal) >= abs(dblMaxNegVal)))
 		intIdx = intPosIdx;
 		intPeakLoc = vecLocsPos(intIdx);
 		dblPeakProm = vecPromsPos(intIdx);
 		dblCutOff = vecData(intPeakLoc) - dblPeakProm/2;
 		indPeakMembers = vecData > dblCutOff;
-	elseif (isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) ||  (abs(dblMaxPosVal) < abs(dblMaxNegVal))
+	elseif (isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) || ((~isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) && (abs(dblMaxPosVal) < abs(dblMaxNegVal)))
 		intIdx = intNegIdx;
 		intPeakLoc = vecLocsNeg(intIdx);
 		dblPeakProm = vecPromsNeg(intIdx);
