@@ -65,7 +65,7 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 		[vecCounts,~,vecIdx]=histcounts(vecX,vecBins);
 		vecCounts = vecCounts(:)';
 		indKeep = vecIdx > 0;
-		vecSums = accumarray(flat(vecIdx(indKeep)),flat(vecY(indKeep)));
+		vecSums(:) = accumarray(flat(vecIdx(indKeep)),flat(vecY(indKeep)));
 		vecSums((end+1):numel(vecCounts)) = 0;
 		vecMeans = vecSums./vecCounts;
 	end
