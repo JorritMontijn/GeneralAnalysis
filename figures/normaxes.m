@@ -6,7 +6,9 @@ function vecLim = normaxes(varargin)
 	
 	%set defaults
 	hFig=gcf;
+	vecSubplots = 1:numel(hFig.Children);
 	strAxis = 'y';
+	cellCheckAxes = {'x','y','z'};
 	for intArgIn=1:numel(varargin)
 		varIn = varargin{intArgIn};
 		if ishandle(varIn)
@@ -19,29 +21,26 @@ function vecLim = normaxes(varargin)
 	end
 	
 	%get min/max limits
-	dblMinV = inf;
-	dblMaxV = -inf;
+	dblMinV = inf*ones(size(cellCheckAxes));
+	dblMaxV = -inf*ones(size(cellCheckAxes));
 	for intAx=vecSubplots(:)'
-		if contains(strAxis,'y')
-			vecLim = get(hFig.Children(intAx),'ylim');
-		elseif contains(strAxis,'x')
-			vecLim = get(hFig.Children(intAx),'xlim');
-		elseif contains(strAxis,'z')
-			vecLim = get(hFig.Children(intAx),'zlim');
+		if ~isa(hFig.Children(intAx),'matlab.graphics.axis.Axes'),continue;end
+		for intChAx=1:numel(cellCheckAxes)
+			if contains(strAxis,cellCheckAxes{intChAx})
+				vecLim = get(hFig.Children(intAx),strcat(cellCheckAxes{intChAx},'lim'));
+				dblMinV = min([dblMinV vecLim]);
+				dblMaxV = max([dblMaxV vecLim]);
+			end
 		end
-		dblMinV = min([dblMinV vecLim]);
-		dblMaxV = max([dblMaxV vecLim]);
 	end
 	
 	%set limits
-	vecLim = [dblMinV dblMaxV];
 	for intAx=vecSubplots(:)'
-		if contains(strAxis,'y')
-			set(hFig.Children(intAx),'ylim',vecLim);
-		elseif contains(strAxis,'x')
-			set(hFig.Children(intAx),'xlim',vecLim);
-		elseif contains(strAxis,'z')
-			set(hFig.Children(intAx),'zlim',vecLim);
+		if ~isa(hFig.Children(intAx),'matlab.graphics.axis.Axes'),continue;end
+		for intChAx=1:numel(cellCheckAxes)
+			if contains(strAxis,cellCheckAxes{intChAx})
+				set(hFig.Children(intAx),strcat(cellCheckAxes{intChAx},'lim'),[dblMinV dblMaxV]);
+			end
 		end
 	end
 end
