@@ -10,7 +10,7 @@ function runDesktopStateBackup
 	sFiles = dir(strBackupDir);
 	
 	%remove old files (>1 week old)
-	vecDaysAgo = daysdif(getDate,{sFiles(:).date});
+	vecDaysAgo = datediff(getDate,{sFiles(:).date});
 	vecRemFiles = vecDaysAgo > 7 & flat(contains({sFiles(:).name},'MATLABDesktop'));
 	for intRemFile = find(vecRemFiles(:))'
 		delete(strcat(strBackupDir,filesep,sFiles(intRemFile).name));
