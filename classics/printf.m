@@ -23,7 +23,7 @@ function printf(strBase,varargin) %#ok<*INUSL>
 			cellFunctions=inmem;
 			intFunc = find(~cellfun(@isempty,cellfun(@strfind,cellFunctions,cellfill('run',size(cellFunctions)),'UniformOutput',false)),1,'last');
 			if isempty(intFunc),strFunction = '';else strFunction = cellFunctions{intFunc};end
-			rng(now*cputime); %randomize initial seed of random number generator
+			rng(mod(now*cputime,2^32)); %randomize initial seed of random number generator
 			vecTime = fix(clock);
 			strTime = sprintf('%02d%02d%02d',vecTime(4:6));
 			strFile = [strFunction '_' date '_' strTime '_' num2str(round(9*rand(10,1)))' '.log'];
