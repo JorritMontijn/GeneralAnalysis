@@ -5,6 +5,7 @@ function vecLim = normaxes(varargin)
 	%Note: subplots is given in children IDs, not in subplot numbers
 	
 	%set defaults
+	drawnow;
 	hFig=gcf;
 	vecSubplots = 1:numel(hFig.Children);
 	strAxis = 'y';
