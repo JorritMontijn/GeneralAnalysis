@@ -12,11 +12,11 @@ function UpdateWaitbar(~)
 	%
 	%Version History
 	%2020-10-16 Created by Jorrit Montijn
-
+	
 	global intWaitbarCounter;
 	global intWaitbarTotal;
 	global ptrWaitbarHandle;
-	if ~exist('ptrWaitbarHandle','var') || isempty(ptrWaitbarHandle)
+	if ~exist('ptrWaitbarHandle','var') || isempty(ptrWaitbarHandle) || ~isvalid(ptrWaitbarHandle)
 		ptrWaitbarHandle = waitbar(0, 'Please wait ...');
 	end
 	if ~exist('intWaitbarCounter','var') || isempty(intWaitbarCounter)
