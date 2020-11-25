@@ -20,6 +20,10 @@ function matImage = imfilt(matImage,matFilt,strPadVal)
 	matImage = padarray(matImage,floor(size(matFilt)/2),strPadVal);
 	
 	%filter
-	matImage = conv2(matImage,matFilt,'valid');
+	if ndims(matImage) > 2 || ndims(matFilt) > 2
+		matImage = convn(matImage,matFilt,'valid');
+	else
+		matImage = conv2(matImage,matFilt,'valid');
+	end
 end
 
