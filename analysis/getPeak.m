@@ -29,7 +29,7 @@ function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecP
 	end
 	
 	%get most prominent positive peak times
-	[vecValsPos,vecLocsPos,vecWidthPos,vecPromsPos]=findpeaks(vecData);
+	[vecValsPos,vecLocsPos,vecWidthPos,vecPromsPos]=findpeaks(vecData); %findpeaks / findsignalpeaks
 	%remove peaks outside window
 	indRemPeaks = vecT(vecLocsPos) < vecRestrictRange(1) | vecT(vecLocsPos) > vecRestrictRange(end);
 	vecValsPos(indRemPeaks) = [];
@@ -39,7 +39,7 @@ function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecP
 	[dblMaxPosVal,intPosIdx] = max(vecValsPos);
 	
 	%get most prominent negative peak times
-	[vecValsNeg,vecLocsNeg,vecsWidthNeg,vecPromsNeg]=findpeaks(-vecData);
+	[vecValsNeg,vecLocsNeg,vecsWidthNeg,vecPromsNeg]=findpeaks(-vecData); %findpeaks / findsignalpeaks
 	%remove peaks outside window
 	indRemPeaks = vecT(vecLocsNeg) < vecRestrictRange(1) | vecT(vecLocsNeg) > vecRestrictRange(end);
 	vecValsNeg(indRemPeaks) = [];

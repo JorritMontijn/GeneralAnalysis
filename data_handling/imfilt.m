@@ -1,5 +1,5 @@
 function matImage = imfilt(matImage,matFilt,strPadVal)
-	%imfilt 2D image filtering. Syntax:
+	%imfilt ND image filtering. Syntax:
 	%   matData = imfilt(matImage,matFilt,strPadVal)
 	%
 	%	input:
@@ -10,6 +10,8 @@ function matImage = imfilt(matImage,matFilt,strPadVal)
 	%Version history:
 	%1.0 - 16 Dec 2019
 	%	Created by Jorrit Montijn
+	%1.1 - 25 Nov 2020
+	%	Added support for N-dimensional matrices [by JM]
 	
 	%get padding type
 	if ~exist('strPadVal','var') || isempty(strPadVal)

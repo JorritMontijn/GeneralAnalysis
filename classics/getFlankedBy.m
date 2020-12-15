@@ -30,7 +30,7 @@ function [strOut,intStop,intStart] = getFlankedBy(strInput,strBefore,strAfter,st
 			if isempty(strAfter)
 				intStop = length(strInput) + 1;
 			else
-				intStop = findLast(find(strfind(strInput,strAfter) > intStart,1,'first'));
+				intStop = findLast(find(strfind(strInput,strAfter) > intStart,1,strWhich));
 			end
 			if ~isempty(intStop)
 				strOut = strInput(intStart:(intStop-1));
