@@ -1,7 +1,9 @@
-function [matW, dblMSE, intRank, sSuppOut] = doRidgeRRR(matX,matY,intRank,dblLambda)
+function [matW, dblMSE, intRank, sSuppOut] = doRidgeRRR(matX,matY,intRank,dblLambda,intUseVersion)
 	% Y = X*matW subject to Ridge regularisation
 	%% set which version to use
-	intUseVersion = 1;
+	if ~exist('intUseVersion','var') || isempty(intUseVersion)
+		intUseVersion = 1;
+	end
 	
 	%% initialize
 	% Make sure matrices are the same length

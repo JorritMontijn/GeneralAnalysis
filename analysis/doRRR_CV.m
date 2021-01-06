@@ -21,11 +21,11 @@ function [matW, dblMSE, intRankT, sSuppOut, intOutputFlag] = doRRR_CV(matX, matY
 	if ~exist('intRankT','var') || isempty(intRankT)
 		intRankT = min(intR_of_X, intS_of_Y);
 	end
-	if ~exist('intFoldK','var')
+	if ~exist('intFoldK','var') || isempty(intFoldK)
 		intFoldK = 10;
 	end
 	%default Lambda
-	if ~exist('dblLambda','var')
+	if ~exist('dblLambda','var') || isempty(dblLambda)
 		dblLambda = 0;
 	end
 	

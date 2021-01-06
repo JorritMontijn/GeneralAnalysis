@@ -38,7 +38,7 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 	% Define the weighting matrix
 	dblCond = rcond(matSSYY);
 	if dblCond > 1e15 || dblCond < 1e-15
-		fprintf('WARNING: Matrix is close to singular or badly scaled. Using pseudo-inverse. Results may be inaccurate. RCOND =  %e.\n',dblCond); 
+		%fprintf('WARNING: Matrix is close to singular or badly scaled. Using pseudo-inverse. Results may be inaccurate. RCOND =  %e.\n',dblCond); 
 		matGamma = pinv(matSSYY);
 	else
 		matGamma = inv(matSSYY);
@@ -47,7 +47,11 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 	
 	% Define the matrix of eigen-values
 	if intRankT < 20
-		[matV_rr,vecD_rr]=eig(((matSqrt*matSSYX)/matSSXX)*matSSXY*matSqrt,'vector');
+		try
+			[matV_rr,vecD_rr]=eig(((matSqrt*matSSYX)/matSSXX)*matSSXY*matSqrt,'vector');
+		catch
+			fprintf('break!\n');
+		end
 		[vecD_rr,vecReorder] = sort(vecD_rr,'descend');
 		matD_rr = diag(vecD_rr(1:intRankT));
 		matV_rr = matV_rr(:,vecReorder);
