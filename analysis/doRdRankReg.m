@@ -47,11 +47,7 @@ function [matW, dblMSE, intRankT, sSuppOut] = doRdRankReg(matX, matY, intRank)
 	
 	% Define the matrix of eigen-values
 	if intRankT < 20
-		try
-			[matV_rr,vecD_rr]=eig(((matSqrt*matSSYX)/matSSXX)*matSSXY*matSqrt,'vector');
-		catch
-			fprintf('break!\n');
-		end
+		[matV_rr,vecD_rr]=eig(((matSqrt*matSSYX)/matSSXX)*matSSXY*matSqrt,'vector');
 		[vecD_rr,vecReorder] = sort(vecD_rr,'descend');
 		matD_rr = diag(vecD_rr(1:intRankT));
 		matV_rr = matV_rr(:,vecReorder);
