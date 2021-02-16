@@ -15,6 +15,7 @@ function strCharArray = struct2ini(structIn,strHeaderName)
 			strVal=strcat('[',num2str(varVal(:)'),']');
 		else
 			warning([mfilename ':FieldIgnored'],sprintf('Field "%s" ignored due to incompatible data type',strField));
+			continue;
 		end
 		strVarLine = strcat(strField,'=',strVal,'\n');
 		strCharArray = strcat(strCharArray,strVarLine);

@@ -1,4 +1,11 @@
-function A = catstruct(varargin)
+function struct1 = catstruct(struct1,struct2)
+	
+	cellFields2 = fieldnames(struct2);
+	for intField=1:numel(cellFields2)
+		struct1.(cellFields2{intField}) = struct2.(cellFields2{intField});
+	end
+end
+%{
 % CATSTRUCT   Concatenate or merge structures with different fieldnames
 %   X = CATSTRUCT(S1,S2,S3,...) merges the structures S1, S2, S3 ...
 %   into one new structure X. X contains all fields present in the various
@@ -148,6 +155,6 @@ else
     A = cell2struct(VAL, FN);
     A = reshape(A, sz0) ; % reshape into original format
 end
-
+%}
 
 
