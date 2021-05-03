@@ -1,8 +1,13 @@
-function struct1 = catstruct(struct1,struct2)
+function struct1 = catstruct(struct1,varargin)
 	
-	cellFields2 = fieldnames(struct2);
-	for intField=1:numel(cellFields2)
-		struct1.(cellFields2{intField}) = struct2.(cellFields2{intField});
+	if nargin > 2
+		struct1 = catstruct(struct1,catstruct(varargin{:}));
+	else
+		struct2 = varargin{1};
+		cellFields2 = fieldnames(struct2);
+		for intField=1:numel(cellFields2)
+			struct1.(cellFields2{intField}) = struct2.(cellFields2{intField});
+		end
 	end
 end
 %{
