@@ -64,7 +64,7 @@ function h=uitext(varargin)
 	end
 	%Create an axes, initialize the text object, and make the axes invisible.
 	ax=axes(ax_args{:});axis(ax,[0 1 0 1])
-	txt=text(dblTextX,dblTextY,'','VerticalAlignment',strVertAlign,'HorizontalAlignment',strHorzAlign);
+	txt=text(ax,dblTextX,dblTextY,'','VerticalAlignment',strVertAlign,'HorizontalAlignment',strHorzAlign);
 	set(ax,'Visible','off')
 	%Apply the remaining Name,Value pairs.
 	set(txt,varargin{:});
