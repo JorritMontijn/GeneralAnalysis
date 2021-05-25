@@ -23,9 +23,6 @@ function varargout = dimfun(intSplitDim,hFunc,matData,varargin)
 	for intArgIn = 1:numel(varargin)
 		strArgs = strcat(strArgs,['cellfill(varargin{' num2str(intArgIn) '},size(cellData)),']);
 	end
-	if numel(strArgs) > 0
-		strArgs(end) = [];
-	end
 	
 	%build output
 	strOut = '[';
@@ -35,7 +32,7 @@ function varargout = dimfun(intSplitDim,hFunc,matData,varargin)
 	strOut(end) = ']';
 	
 	%execute
-	strEval2 = [strOut ' = cellfun(hFunc,cellData,' strArgs ',''UniformOutput'',false);'];
+	strEval2 = [strOut ' = cellfun(hFunc,cellData,' strArgs '''UniformOutput'',false);'];
 	eval(strEval2);
 end
 

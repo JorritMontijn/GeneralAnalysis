@@ -22,7 +22,7 @@ function uilock(handles)
 	end
 	cellLockTypes = {'pushbutton','togglebutton','checkbox','radiobutton','edit','slider','listbox','popupmenu'};
 	if isprop(handles,'Type') && strcmp(handles.Type,'uicontrol') && isprop(handles,'Style') && contains(handles.Style,cellLockTypes)
-		if ~(isprop(handles,'String') && contains(handles.String,'save','IgnoreCase',true))
+		if ~(isprop(handles,'String') && contains(handles.String,'save','IgnoreCase',true)) && ~strcmpi(get(handles,'UserData'),'open')
 			set(handles,'Enable','off');
 			if strcmpi(get(handles,'UserData'),'lock')
 				set(handles,'UserData','unlock');

@@ -1,6 +1,6 @@
-function jFig = maxfig(ptrHandle,dblRescaleHeight)
+function jFig = maxfig(ptrHandle,dblRescaleHeight,dblRescaleWidth)
 	%maxfig Maximizes figure. Syntax:
-	%   jFig = maxfig(ptrHandle,dblRescaleHeight)
+	%   jFig = maxfig(ptrHandle,dblRescaleHeight,dblRescaleWidth)
 	
 	%get handle
 	if ~exist('ptrHandle','var') || isempty(ptrHandle)
@@ -8,6 +8,9 @@ function jFig = maxfig(ptrHandle,dblRescaleHeight)
 	end
 	if ~exist('dblRescaleHeight','var') || isempty(dblRescaleHeight)
 		dblRescaleHeight = 1;
+	end
+	if ~exist('dblRescaleWidth','var') || isempty(dblRescaleWidth)
+		dblRescaleWidth = 1;
 	end
 	
 	%maximize
@@ -19,13 +22,13 @@ function jFig = maxfig(ptrHandle,dblRescaleHeight)
 	warning(sWarn);
 	
 	%adjust distances
-	if dblRescaleHeight ~= 1
+	if dblRescaleHeight ~= 1 || dblRescaleWidth ~= 1
 		vecAxes = ptrHandle.Children;
 		intNumAxes = numel(vecAxes);
 		matPos = nan(intNumAxes,4);
 		for intAx=1:numel(vecAxes)
 			matPos(intAx,:) = get(vecAxes(intAx),'Position');
-			set(vecAxes(intAx),'Position',[matPos(intAx,1:3) dblRescaleHeight*matPos(intAx,4)]);
+			set(vecAxes(intAx),'Position',[matPos(intAx,1:2) dblRescaleWidth*matPos(intAx,3) dblRescaleHeight*matPos(intAx,4)]);
 		end
 	end
 	drawnow;

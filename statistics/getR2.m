@@ -1,6 +1,9 @@
-function [dblR2,dblSS_tot,dblSS_res,dblT,dblP] = getR2(vecY,vecFitY,intK)
+function [dblR2,dblSS_tot,dblSS_res,dblT,dblP,dblR2_adjusted] = getR2(vecY,vecFitY,intK)
 	%getR2 Calculates R-squared
-	%   [dblR2,dblSS_tot,dblSS_res] = getR2(vecY,vecFitY)
+	%   [dblR2,dblSS_tot,dblSS_res,dblT,dblP,dblR2_adjusted] = getR2(vecY,vecFitY,intK)
+	%
+	%intK is number of regressors
+	
 	indUseVals = ~isnan(vecY) & ~isnan(vecFitY);
 	if sum(indUseVals) ~= numel(vecY)
 		warning([mfilename ':NaNsDetected'],'NaNs detected!')
@@ -12,11 +15,14 @@ function [dblR2,dblSS_tot,dblSS_res,dblT,dblP] = getR2(vecY,vecFitY,intK)
 	dblR2 = 1 - (dblSS_res / dblSS_tot);	
 	
 	%p-value
+	intN = numel(vecY);
 	dblT = [];
 	dblP = [];
+	dblR2_adjusted = [];
 	if exist('intK','var') && ~isempty(intK)
-		dblT=sqrt((dblR2*(numel(vecY)-intK-1))/(1-dblR2) );
-		dblP = 1-tcdf(dblT,numel(vecY)-1);
+		dblT=sqrt((dblR2*(intN-intK-1))/(1-dblR2) );
+		dblP = 2*tcdf(real(dblT),intN-1,'upper');
+		dblR2_adjusted = 1 - (((1 - dblR2) * (intN - 1)) / (intN - intK - 1));
 	end
 end
 
