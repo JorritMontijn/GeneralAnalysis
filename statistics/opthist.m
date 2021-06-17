@@ -41,7 +41,7 @@ function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
 			intCounter = intCounter + intPoints;
 		end
 		
-		if range(vecN) <= 10
+		if range(vecN) < 10
 			boolConverged = true;
 			break;
 		end
