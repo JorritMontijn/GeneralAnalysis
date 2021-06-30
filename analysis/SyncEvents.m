@@ -1,4 +1,4 @@
-function [dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolVerbose)
+function [dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolUsePath,boolVerbose)
 	%SyncEvents Syncs events
 	%[dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolVerbose)
 	%
@@ -16,6 +16,9 @@ function [dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolVerbose)
 	%1: agreement & high certainty
 	
 	%% prepro
+	if ~exist('boolUsePath','var') || isempty(boolUsePath)
+		boolUsePath = false;
+	end
 	if ~exist('boolVerbose','var') || isempty(boolVerbose)
 		boolVerbose = true;
 	end
@@ -41,6 +44,13 @@ function [dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolVerbose)
 	[vecP,vecI]=findmax(vecSoftmin,10);
 	dblAlignmentCertainty = vecP(1)/sum(vecP);
 	intStartStim = vecI(1);
+	
+	%mean based
+	if ~boolUsePath
+		dblStartT=sum(vecSignalT(vecI).*vecSoftmin(vecI))/sum(vecSoftmin(vecI));
+		intFlagOut = vecP(1)>0.5;
+		return;
+	end
 	
 	%% path-based algorithm
 	%calculate minimum hop distances
