@@ -1,6 +1,6 @@
-function [dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolUsePath,boolVerbose)
+function [dblStartT,intFlagOut,vecTotErr] = SyncEvents(vecRefT,vecSignalT,boolUsePath,boolVerbose)
 	%SyncEvents Syncs events
-	%[dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolVerbose)
+	%[dblStartT,intFlagOut,vecTotErr] = SyncEvents(vecRefT,vecSignalT,boolVerbose)
 	%
 	%inputs:
 	%vecRefT: [1 x n] timestamp vector
@@ -45,9 +45,9 @@ function [dblStartT,intFlagOut] = SyncEvents(vecRefT,vecSignalT,boolUsePath,bool
 	dblAlignmentCertainty = vecP(1)/sum(vecP);
 	intStartStim = vecI(1);
 	
-	%mean based
+	%most likely
 	if ~boolUsePath
-		dblStartT=sum(vecSignalT(vecI).*vecSoftmin(vecI))/sum(vecSoftmin(vecI));
+		dblStartT=vecSignalT(intStartStim);
 		intFlagOut = vecP(1)>0.5;
 		return;
 	end
