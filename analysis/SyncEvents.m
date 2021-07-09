@@ -28,6 +28,7 @@ function [dblStartT,intFlagOut,vecTotErr] = SyncEvents(vecRefT,vecSignalT,boolUs
 	intPossT = numel(vecSignalT);
 	vecMaxError = zeros(1,intPossT);
 	vecLastError = zeros(1,intPossT);
+	vecMeanError = zeros(1,intPossT);
 	for intStartIdx=1:intPossT
 		dblT0 = vecRefT(1)-vecSignalT(intStartIdx);
 		%find errors
@@ -36,10 +37,11 @@ function [dblStartT,intFlagOut,vecTotErr] = SyncEvents(vecRefT,vecSignalT,boolUs
 		for intStim=1:intNumS
 			vecErrT(intStim) = min(abs(vecSignalT+dblT0-vecRefT(intStim)));
 		end
+		vecMeanError(intStartIdx) = mean(abs(vecErrT));
 		vecMaxError(intStartIdx) = max(vecErrT).^2;
 		vecLastError(intStartIdx) = vecErrT(end).^2;
 	end
-	vecTotErr = vecMaxError + vecLastError;
+	vecTotErr = vecMaxError + vecLastError + vecMeanError;
 	vecSoftmin = softmax(-vecTotErr);
 	[vecP,vecI]=findmax(vecSoftmin,10);
 	dblAlignmentCertainty = vecP(1)/sum(vecP);
