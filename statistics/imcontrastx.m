@@ -1,4 +1,4 @@
-function matOut = imcontrast(matIn,dblContrast,dblBaseline)
+function matOut = imcontrastx(matIn,dblContrast,dblBaseline)
 	%imcontrast Change contrast of image
 	%   matOut = imcontrast(matIn,dblContrast,dblBaseline)
 	%
