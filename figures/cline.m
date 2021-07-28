@@ -1,11 +1,11 @@
-function h = cline(vecX, vecY, vecZ, vecC)
+function h = cline(varargin)
 	%cline Draw colored lines. Syntax:
-	%	h = cline(vecX, vecY, vecZ, vecC)
+	%	h = cline([hAx],vecX, vecY, vecZ, vecC, boolPatch)
 	%
 	%The original cline() function works with patch objects, which cannot
 	%be exported to a vector image (e.g., pdf or eps). I therefore built
 	%this function that has an identical syntax, but instead uses multiple
-	%coloured lines between points.
+	%coloured lines between points. To use patch objects, use boolPatch=1.
 	%
 	%Inputs can be 2, 3, or 4 vectors. The function assumes the last vector
 	%indexes the color and retrieves the colormap from the axis. After
@@ -18,13 +18,30 @@ function h = cline(vecX, vecY, vecZ, vecC)
 	%	Created by Jorrit Montijn
 	
 	% Check input arguments
-	narginchk(2, 4)
-	if ~isnumeric(vecX) || ~isnumeric(vecY) || ~isvector(vecX) || ~isvector(vecY) || length(vecX)~=length(vecY);
+	narginchk(2, 6)
+	if isaxes(varargin{1})
+		hAx = varargin{1};
+		varargin(1) = [];
+	else
+		hAx = gca;
+	end
+	if numel(varargin{end}) == 1 && (varargin{end} == 1 || varargin{end} == 0)
+		boolPatch = varargin{end};
+		varargin(end) = [];
+	else
+		boolPatch = false;
+	end
+	vecX = varargin{1};
+	vecY = varargin{2};
+	if numel(varargin) > 2,vecZ = varargin{3}; end
+	if numel(varargin) > 3,vecC = varargin{4}; end
+	
+	if ~isnumeric(vecX) || ~isnumeric(vecY) || ~isvector(vecX) || ~isvector(vecY) || length(vecX)~=length(vecY)
 		error('x and y must be numeric and conforming vectors');
 	end
 	if (nargin == 3 && (~isnumeric(vecZ) || ~isvector(vecZ) || length(vecX)~=length(vecZ))) || ...
-			(nargin == 4 && ~isempty(vecZ) && (~isnumeric(vecZ) || ~isvector(vecZ) || length(vecX)~=length(vecZ))) ...
-			(nargin == 4 && (~isnumeric(vecC) || ~isvector(vecC) || length(vecX)~=length(vecC)))
+			(nargin == 4 && ~isempty(vecZ) && (~isnumeric(vecZ) || ~isvector(vecZ) || length(vecX)~=length(vecZ))) || ...
+			(nargin == 4 && (~isnumeric(vecC) || ~isvector(vecC) || (length(vecX)~=length(vecC) && length(vecC) ~= 3)))
 		error('z (and cdata) must be a numeric vector and conforming to x and y');
 	end
 	
@@ -47,24 +64,41 @@ function h = cline(vecX, vecY, vecZ, vecC)
 	end
 	
 	%get colormap
-	cMap = get(gca, 'Colormap');
+	cMap = get(hAx, 'Colormap');
 	
 	%expand colormap to number of points
 	intMaxL = numel(vecX)-1;
-	vecLinSpaceC = linspace(min(vecC),max(vecC),size(cMap,1));
-	cMap2 = cat(2,interp1(vecLinSpaceC,cMap(:,1),vecC)',...
-		interp1(vecLinSpaceC,cMap(:,2),vecC)',...
-		interp1(vecLinSpaceC,cMap(:,3),vecC)');
-	set(gca,'ColorOrder',cMap2);
 	
 	%plot
-	boolOldHold = ishold(gca);
-	hold on;
-	h = nan(1,intMaxL);
-	for i=1:intMaxL
-		h(i) = plot3([vecX(i) vecX(i+1)],[vecY(i) vecY(i+1)],[vecZ(i) vecZ(i+1)]);
+	boolOldHold = ishold(hAx);
+	hold(hAx,'on');
+	if boolPatch
+		%patches
+		h = patch(hAx,[vecX(:)' nan], [vecY(:)' nan], [vecZ(:)' nan], 0);
+		if numel(vecC) == 3 && numel(vecX) ~= 3
+			set(h,'edgecolor',vecC,'facecolor','none')
+		else
+			cdata = [vecC(:)' nan];
+			set(h,'cdata', cdata, 'edgecolor','interp','facecolor','none')
+		end
+	else
+		%lines
+		if numel(vecC) == 3 && numel(vecX) ~= 3
+			cMap2 = repmat(vecC(:)',[intMaxL 1]);
+		else
+			vecLinSpaceC = linspace(min(vecC),max(vecC),size(cMap,1));
+			cMap2 = cat(2,interp1(vecLinSpaceC,cMap(:,1),vecC)',...
+				interp1(vecLinSpaceC,cMap(:,2),vecC)',...
+				interp1(vecLinSpaceC,cMap(:,3),vecC)');
+		end
+		
+		set(hAx,'ColorOrder',cMap2);
+		h = nan(1,intMaxL);
+		for i=1:intMaxL
+			h(i) = plot3(hAx,[vecX(i) vecX(i+1)],[vecY(i) vecY(i+1)],[vecZ(i) vecZ(i+1)]);
+		end
 	end
-	if ~boolOldHold,hold off;end
+	if ~boolOldHold,hold(hAx,'off');end
 end
 function h = clineOld(x, y, z, cdata)
 	% Draw a color-coded line by using the edge of a patch with no facecolor
