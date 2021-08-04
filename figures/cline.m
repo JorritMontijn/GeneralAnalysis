@@ -16,6 +16,8 @@ function h = cline(varargin)
 	%Version history:
 	%1.0 - 6 February 2020
 	%	Created by Jorrit Montijn
+	%1.1 - 4 August 2021
+	%	Easier color map usage & switch for patch objects [by JM]
 	
 	% Check input arguments
 	narginchk(2, 6)

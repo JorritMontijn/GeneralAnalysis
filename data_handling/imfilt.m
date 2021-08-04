@@ -1,4 +1,4 @@
-function matImage = imfilt(matImage,matFilt,strPadVal)
+function matImage = imfilt(matImageIn,matFilt,strPadVal)
 	%imfilt ND image filtering. Syntax:
 	%   matData = imfilt(matImage,matFilt,strPadVal)
 	%
@@ -19,13 +19,13 @@ function matImage = imfilt(matImage,matFilt,strPadVal)
 	end
 	
 	%pad array
-	matImage = padarray(matImage,floor(size(matFilt)/2),strPadVal);
+	matImage = padarray(matImageIn,floor(size(matFilt)/2),strPadVal);
 	
 	%filter
-	if ndims(matImage) > 2 || ndims(matFilt) > 2
-		matImage = convn(matImage,matFilt,'valid');
-	else
+	if ndims(matImage) < 3 && ndims(matFilt) < 3
 		matImage = conv2(matImage,matFilt,'valid');
+	else
+		matImage = convn(matImage,matFilt,'valid');
 	end
 end
 
