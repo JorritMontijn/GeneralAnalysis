@@ -57,7 +57,7 @@ function vecDistance = strdist(s1,s2,varargin)
 	if iscell(s2) && all(cellfun(@ischar,s2))
 		boolCellArray = true;
 		%fine
-	elseif ischar(s2) && m2 == 1
+	elseif ischar(s2)
 		%also fine
 	else
 		error([mfilename ':InputError'],'s2 must be horizontal strings or cell array of horizontal strings.');
