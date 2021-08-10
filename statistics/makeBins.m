@@ -1,21 +1,21 @@
-function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBins)
-	%makeBins Bins an indexed matrix by its 2nd dimension
-	%   syntax: [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBins)
-	%	description: bins on the x axis (the values in vecX) and returns
-	%	the number (nVec), mean (meanVec) and standard deviation (stdVec)
-	%	of the values per bin based on their corresponding values in vecY.
+function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecIdx,vecVals,vecBins)
+	%makeBins Bins an indexed vector and returns the mean/sd/etc per bin
+	%   syntax: [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecIdx,vecVals,vecBins)
+	%	description: bins using vecIdx and returns
+	%	the number (vecCounts), mean (vecMeans) and standard deviation (vecSDs)
+	%	of the values per bin based on their corresponding values in vecVals.
 	%	If you simply want to count the number of values inside a certain
-	%	bin, you can use the Matlab function hist()
+	%	bin, you can use the Matlab function histcounts()
 	%	input:
-	%	- vecX: vector containing data on the binning-axis
-	%	- vecY: vector containing data corresponding to identical positions
-	%	  on vecX; the value vecY(n) corresponds to the value vecX(n)
+	%	- vecIdx: vector containing data on the indexing (binning) axis
+	%	- vecVals: vector containing data corresponding to identical positions
+	%	  on vecIdx; the value vecVals(i) corresponds to the value vecIdx(i)
 	%	- vecBins: vector containing the edges of the bins where data
-	%	  from vecY will be pooled based on their corresponding values in
-	%	  vecX.
+	%	  from vecVals will be pooled based on their corresponding values in
+	%	  vecIdx.
 	%	output:
-	%	- vecCounts: number of vecX values per bin
-	%	- vecMeans: mean of vecY values per bin
+	%	- vecCounts: number of vecIdx values per bin
+	%	- vecMeans: mean of vecVals values per bin
 	%	- vecSDs: standard deviation of vecY values per bin
 	%	- cellVals: cell-array with vector of values per bin
 	%	- cellIDs: cell-array with selection vector per bin
@@ -27,13 +27,13 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 	%	Added pre-allocation and updated variable names [by JM]
 	
 	%pre-allocate
-	if isvector(vecY),vecY=vecY(:);end
-	vecX = vecX(:);
+	if isvector(vecVals),vecVals=vecVals(:);end
+	vecIdx = vecIdx(:);
 	vecBins = vecBins(:);
 	intBinVals = length(vecBins);
 	vecCounts = nan(intBinVals-1,1);
-	vecMeans = nan(intBinVals-1,size(vecY,2));
-	vecSDs = nan(intBinVals-1,size(vecY,2));
+	vecMeans = nan(intBinVals-1,size(vecVals,2));
+	vecSDs = nan(intBinVals-1,size(vecVals,2));
 	cellVals = cell(1,intBinVals-1);
 	cellIDs = cell(1,intBinVals-1);
 	
@@ -43,11 +43,11 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 		for intBin=1:intBinVals-1
 			intBinMax = vecBins(intBin+1);
 			intBinMin = vecBins(intBin);
-			vecValIndexUnderMax = vecX < intBinMax;
-			vecValIndexOverMin = vecX > intBinMin;
+			vecValIndexUnderMax = vecIdx < intBinMax;
+			vecValIndexOverMin = vecIdx > intBinMin;
 			vecValIndexThisBin = vecValIndexUnderMax & vecValIndexOverMin;
 			
-			vecTheseVals = vecY(vecValIndexThisBin,:);
+			vecTheseVals = vecVals(vecValIndexThisBin,:);
 			vecCounts(intBin,:) = size(vecTheseVals,1);
 			vecMeans(intBin,:) = nanmean(vecTheseVals);
 			vecSDs(intBin,:) = nanstd(vecTheseVals);
@@ -62,10 +62,10 @@ function [vecCounts,vecMeans,vecSDs,cellVals,cellIDs] = makeBins(vecX,vecY,vecBi
 		end
 	else
 		%% run fast binning, v3
-		[vecCounts,~,vecIdx]=histcounts(vecX,vecBins);
+		[vecCounts,~,vecIdx]=histcounts(vecIdx,vecBins);
 		vecCounts = vecCounts(:)';
 		indKeep = vecIdx > 0;
-		vecSums(:) = accumarray(flat(vecIdx(indKeep)),flat(vecY(indKeep)));
+		vecSums(:) = accumarray(flat(vecIdx(indKeep)),flat(vecVals(indKeep)));
 		vecSums((end+1):numel(vecCounts)) = 0;
 		vecMeans = vecSums./vecCounts;
 	end
