@@ -1,7 +1,7 @@
 function matData = imnorm(matData,intDim)
-	%imnorm Normalized image or matrix to values in range [0 1]; if second
-	%argument is supplied, normalization takes place over that dimension,
-	%otherwise normalization is performed over all values [intDim = 0]
+	%imnorm Normalizes vector, image or matrix to values in range [0 1]; if
+	%second argument is supplied, normalization takes place over that
+	%dimension, otherwise normalization is performed over all values
 	%   Syntax: imOut = imnorm(imIn[,intDim])
 	
 	%suppress warning due to eval()
