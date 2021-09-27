@@ -4,11 +4,13 @@ function clabel(varargin)
 	
 	%assert inputs
 	assert(nargin <3);
+	assert(nargin >0);
 	any(cellfun(@ischar,varargin))
 	assert(any(cellfun(@ischar,varargin)));
 	
 	%get handle
 	if nargin == 1
+		drawnow;
 		hBar = cbhandle('force');
 		strTit = varargin{1};
 	else
