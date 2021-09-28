@@ -1,6 +1,6 @@
-function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecPeakStartStopIdx] = getPeak(vecData,vecT,vecRestrictRange)
+function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecPeakStartStopIdx] = getPeak(vecData,vecT,vecRestrictRange,intSwitchZ)
 	%getPeak Returns highest peak time, width, and location. Syntax:
-	%    [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecPeakStartStopIdx] = getPeak(vecData,vecT,vecRestrictRange)
+	%    [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecPeakStartStopIdx] = getPeak(vecData,vecT,vecRestrictRange,intSwitchZ)
 	%
 	%Required input:
 	%	- vecData [N x 1]: values
@@ -8,6 +8,7 @@ function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecP
 	%Optional inputs:
 	%	- vecT [N x 1]: timestamps corresponding to vecData (default: [1:N])
 	%	- vecRestrictRange: restrict peak to lie within vecRestrictRange(1) and vecRestrictRange(end)
+	%	- intSwitchZ: sets type of normalization; 0=raw,1=z-scored
 	%
 	%Outputs:
 	%	- dblPeakTime: time of peak
@@ -27,9 +28,22 @@ function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecP
 	if ~exist('vecRestrictRange','var')
 		vecRestrictRange = [-inf inf];
 	end
+	if ~exist('intSwitchZ','var') || isempty(intSwitchZ)
+		intSwitchZ = 1;
+	end
 	
+	%z-score
+	if intSwitchZ == 1
+		vecDataZ = zscore(vecData);
+	elseif intSwitchZ == 2
+		dblMu = mean(vecData((vecT/max(vecT))<0.02));
+		vecDataZ = (vecData - dblMu)/std(vecData);
+	else
+		vecDataZ = vecData;
+	end
+
 	%get most prominent positive peak times
-	[vecValsPos,vecLocsPos,vecWidthPos,vecPromsPos]=findpeaks(vecData); %findpeaks / findsignalpeaks
+	[vecValsPos,vecLocsPos,vecWidthPos,vecPromsPos]=findpeaks(vecDataZ);
 	%remove peaks outside window
 	indRemPeaks = vecT(vecLocsPos) < vecRestrictRange(1) | vecT(vecLocsPos) > vecRestrictRange(end);
 	vecValsPos(indRemPeaks) = [];
@@ -39,7 +53,7 @@ function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecP
 	[dblMaxPosVal,intPosIdx] = max(vecValsPos);
 	
 	%get most prominent negative peak times
-	[vecValsNeg,vecLocsNeg,vecsWidthNeg,vecPromsNeg]=findpeaks(-vecData); %findpeaks / findsignalpeaks
+	[vecValsNeg,vecLocsNeg,vecsWidthNeg,vecPromsNeg]=findpeaks(-vecDataZ);
 	%remove peaks outside window
 	indRemPeaks = vecT(vecLocsNeg) < vecRestrictRange(1) | vecT(vecLocsNeg) > vecRestrictRange(end);
 	vecValsNeg(indRemPeaks) = [];
@@ -50,18 +64,18 @@ function [dblPeakValue,dblPeakTime,dblPeakWidth,vecPeakStartStop,intPeakLoc,vecP
 	
 	if (isempty(dblMaxPosVal) && isempty(dblMaxNegVal))
 		indPeakMembers = [];
-	elseif (~isempty(dblMaxPosVal) && isempty(dblMaxNegVal)) || ((~isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) && (abs(dblMaxPosVal) >= abs(dblMaxNegVal)))
+	elseif (~isempty(dblMaxPosVal) && isempty(dblMaxNegVal)) || (~isempty(dblMaxPosVal) && (abs(dblMaxPosVal) >= abs(dblMaxNegVal)))
 		intIdx = intPosIdx;
 		intPeakLoc = vecLocsPos(intIdx);
 		dblPeakProm = vecPromsPos(intIdx);
-		dblCutOff = vecData(intPeakLoc) - dblPeakProm/2;
-		indPeakMembers = vecData > dblCutOff;
-	elseif (isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) || ((~isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) && (abs(dblMaxPosVal) < abs(dblMaxNegVal)))
+		dblCutOff = vecDataZ(intPeakLoc) - dblPeakProm/2;
+		indPeakMembers = vecDataZ > dblCutOff;
+	elseif (isempty(dblMaxPosVal) && ~isempty(dblMaxNegVal)) || (~isempty(dblMaxNegVal) && (abs(dblMaxPosVal) < abs(dblMaxNegVal)))
 		intIdx = intNegIdx;
 		intPeakLoc = vecLocsNeg(intIdx);
 		dblPeakProm = vecPromsNeg(intIdx);
-		dblCutOff = vecData(intPeakLoc) + dblPeakProm/2;
-		indPeakMembers = vecData < dblCutOff;
+		dblCutOff = vecDataZ(intPeakLoc) + dblPeakProm/2;
+		indPeakMembers = vecDataZ < dblCutOff;
 	end
 	if ~isempty(indPeakMembers)
 		%get potential starts/stops
