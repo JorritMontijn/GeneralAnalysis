@@ -4,6 +4,8 @@ function [dblR2,dblSS_tot,dblSS_res,dblT,dblP,dblR2_adjusted] = getR2(vecY,vecFi
 	%
 	%intK is number of regressors
 	
+	vecY = vecY(:);
+	vecFitY = vecFitY(:);
 	indUseVals = ~isnan(vecY) & ~isnan(vecFitY);
 	if sum(indUseVals) ~= numel(vecY)
 		warning([mfilename ':NaNsDetected'],'NaNs detected!')
