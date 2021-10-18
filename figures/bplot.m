@@ -255,35 +255,6 @@ else
     wisEdge = prctile(x,[percentileNum2  100-percentileNum2]);
 end
 
-%% add the points to the graph
-% Note that the spread of points should depend on the width of the bars and
-% the total number of points that need to be spread.
-if outlierFlag % but only if you want to
-    %I = (x<wisEdge(1))+(x>wisEdge(2));
-    %I=logical(I);
-    xx=x;%(I);
-    yy=y;%I*0+y
-    %yy=yy(I);
-    yy = jitter(xx,yy,toScale);
-	
-	yy = yy + (rand(size(xx))-0.5)*2*(barWidth/3);
-	
-    if ~isempty(yy)
-        %yy = jitter(xx,yy,toScale);
-
-        maxPointHeight = 2.5;
-        %yy = (yy-y)*4+y;
-        %yy = (yy-y)*(barWidth/maxPointHeight)/max([yy-y; barWidth/maxPointHeight])+y;
-
-        if ~isempty(xx)
-            if horizontalFlag
-                hReg2(6) = scatter(xx,yy,linewidth*15,scatColor,'.');
-            else
-                 hReg2(6) = scatter(yy,xx,linewidth*15,scatColor,'.');
-            end
-        end
-    end
-end
 
 %% display all the elements for the box plot
 
@@ -321,6 +292,35 @@ else %
 
 end
 
+%% add the points to the graph
+% Note that the spread of points should depend on the width of the bars and
+% the total number of points that need to be spread.
+if outlierFlag % but only if you want to
+    %I = (x<wisEdge(1))+(x>wisEdge(2));
+    %I=logical(I);
+    xx=x;%(I);
+    yy=y;%I*0+y
+    %yy=yy(I);
+    yy = jitter(xx,yy,toScale);
+	
+	yy = yy + (rand(size(xx))-0.5)*2*(barWidth/3);
+	
+    if ~isempty(yy)
+        %yy = jitter(xx,yy,toScale);
+
+        maxPointHeight = 2.5;
+        %yy = (yy-y)*4+y;
+        %yy = (yy-y)*(barWidth/maxPointHeight)/max([yy-y; barWidth/maxPointHeight])+y;
+
+        if ~isempty(xx)
+            if horizontalFlag
+                hReg2(6) = scatter(xx,yy,linewidth*15,scatColor,'.');
+            else
+                 hReg2(6) = scatter(yy,xx,linewidth*15,scatColor,'.');
+            end
+        end
+    end
+end
 
 %% Remove the legend entries 
 % remove extras for all the items.
