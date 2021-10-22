@@ -1,11 +1,12 @@
-function [vecPseudoOri,matWhitePseudoData,matPseudoData] = buildPseudoData(cellLabels,cellData)
+function [vecPseudoOri,matWhitePseudoData,matPseudoData] = buildPseudoData(cellLabels,cellData,intUseReps)
 	%buildPseudoData Builds pseudo data
-	%[vecPseudoOri,matWhitePseudoData,matPseudoData] = buildPseudoData(cellLabels,cellData)
+	%[vecPseudoOri,matWhitePseudoData,matPseudoData] = buildPseudoData(cellLabels,cellData,intMinRep)
 	%
 	%Input:
 	%-cellLabel{i} is a vector with trial labels (e.g., stim orientation) for recording i\
 	%-cellData{i} is a matrix of size [Neurons x Trials], where the number of trials must match the
 	%number of elements in cellLabel{i}
+	%-intUseReps is the number of repetitions to use (optional; if none supplied it's calculated)
 	%
 	%Output:
 	%-vecPseudoOri is a vector with labels (# of trials is stim-types x minimum rep-nr)
@@ -14,21 +15,25 @@ function [vecPseudoOri,matWhitePseudoData,matPseudoData] = buildPseudoData(cellL
 	%-matPseudoData is the same as above, but simply concated (non-shuffled) responses
 	
 	%calculate min rep
-	intMinRep = inf;
-	for intRec=1:numel(cellLabels)
-		[varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(cellLabels{intRec});
-		intMinRep = min([intMinRep; vecCounts]);
+	if ~exist('intUseReps','var') || isempty(intUseReps)
+		intUseReps = inf;
+		for intRec=1:numel(cellLabels)
+			[varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(cellLabels{intRec});
+			intUseReps = min([intUseReps; vecCounts]);
+		end
+	else
+		[varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(cellLabels{1});
 	end
 	
 	%build pseudo
-	vecPseudoOri = repmat(vecUnique(:),[intMinRep 1]);
+	vecPseudoOri = repmat(vecUnique(:),[intUseReps 1]);
 	[vecPseudoStimIdx,vecPseudoUnique,vecPseudoCounts,cellPseudoSelect,vecPseudoRepetition] = label2idx(vecPseudoOri);
 	intStimNum = numel(vecUnique);
 	matPseudoData = nan(0,numel(vecPseudoOri));
 	for intRec=1:numel(cellLabels)
 		[varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(cellLabels{intRec});
-		matTemp = nan(size(cellData{intRec},1),intMinRep*numel(vecUnique));
-		for intRep=1:intMinRep
+		matTemp = nan(size(cellData{intRec},1),intUseReps*numel(vecUnique));
+		for intRep=1:intUseReps
 			vecUseTrials = find(vecRepetition==intRep);
 			[dummy,vecReorder] = sort(cellLabels{intRec}(vecUseTrials));
 			matTemp(:,(1:intStimNum)+intStimNum*(intRep-1)) = cellData{intRec}(:,vecUseTrials(vecReorder));
