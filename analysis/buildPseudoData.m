@@ -1,6 +1,17 @@
 function [vecPseudoOri,matWhitePseudoData,matPseudoData] = buildPseudoData(cellLabels,cellData)
 	%buildPseudoData Builds pseudo data
 	%[vecPseudoOri,matWhitePseudoData,matPseudoData] = buildPseudoData(cellLabels,cellData)
+	%
+	%Input:
+	%-cellLabel{i} is a vector with trial labels (e.g., stim orientation) for recording i\
+	%-cellData{i} is a matrix of size [Neurons x Trials], where the number of trials must match the
+	%number of elements in cellLabel{i}
+	%
+	%Output:
+	%-vecPseudoOri is a vector with labels (# of trials is stim-types x minimum rep-nr)
+	%-matWhitePseudoData is a [Neurons x Trials] matrix of concatenated neurons and trial responses
+	%shuffled per neuron within the same stimulus type to remove any correlated responses
+	%-matPseudoData is the same as above, but simply concated (non-shuffled) responses
 	
 	%calculate min rep
 	intMinRep = inf;
