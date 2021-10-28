@@ -1,6 +1,6 @@
-function [vecRefT,matTracePerTrial] = getTraceInTrial(vecTimestamps,vecTrace,vecEventStarts,dblSamplingFreq,dblUseMaxDur)
+function [vecRefT,matTracePerTrial] = getTraceInTrial(vecTimestamps,vecTrace,vecEventStarts,dblSamplingInterval,dblUseMaxDur)
 	%getTraceInTrial Builds common timeframe
-	%syntax: [vecRefT,matTracePerTrial] = getTraceInTrial(vecTimestamps,vecTrace,vecEventStarts,dblSamplingFreq,dblUseMaxDur)
+	%syntax: [vecRefT,matTracePerTrial] = getTraceInTrial(vecTimestamps,vecTrace,vecEventStarts,dblSamplingInterval,dblUseMaxDur)
 	%	input:
 	%	- vecSpikes; spike times (s)
 	%	- vecTrialStarts: trial start times (s)
@@ -11,17 +11,17 @@ function [vecRefT,matTracePerTrial] = getTraceInTrial(vecTimestamps,vecTrace,vec
 	
 	%% prepare
 	%build common timeframe
-	vecRefT = (dblSamplingFreq/2):dblSamplingFreq:dblUseMaxDur;
+	vecRefT = (dblSamplingInterval/2):dblSamplingInterval:dblUseMaxDur;
 	
 	%pre-allocate
-	intTrialNum = size(vecEventStarts,1);
+	intTrialNum = numel(vecEventStarts);
 	intTimeNum = numel(vecTimestamps);
 	matTracePerTrial = nan(intTrialNum,numel(vecRefT));
 	
 	%% assign data
 	for intTrial=1:intTrialNum
 		%% get original times
-		dblStartT = vecEventStarts(intTrial,1);
+		dblStartT = vecEventStarts(intTrial);
 		dblStopT = dblStartT+dblUseMaxDur;
 		intStartT = max([1 find(vecTimestamps > dblStartT,1) - 1]);
 		intStopT = min([intTimeNum find(vecTimestamps > dblStopT,1) + 1]);
