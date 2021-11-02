@@ -14,12 +14,19 @@ function jFig = maxfig(ptrHandle,dblRescaleHeight,dblRescaleWidth)
 	end
 	
 	%maximize
-	sWarn = warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
-	drawnow;
-	jFig = get(handle(ptrHandle), 'JavaFrame');
-	jFig.setMaximized(true);
-	drawnow;
-	warning(sWarn);
+	try
+		%try new method
+		h = handle(ptrHandle);
+		h.WindowState = 'maximized';
+	catch
+		%try old method with javaframe
+		sWarn = warning('off','MATLAB:HandleGraphics:ObsoletedProperty:JavaFrame');
+		drawnow;
+		jFig = get(handle(ptrHandle), 'JavaFrame');
+		jFig.setMaximized(true);
+		drawnow;
+		warning(sWarn);
+	end
 	
 	%adjust distances
 	if dblRescaleHeight ~= 1 || dblRescaleWidth ~= 1
