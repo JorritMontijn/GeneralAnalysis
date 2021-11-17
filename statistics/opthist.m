@@ -1,5 +1,5 @@
 function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
-	% [optN, optC, allN, allC] = opthist(x,Nmax)
+	% [optN, optC, allN, allC] = opthist(x,Nmax,intIterMax)
 	%
 	% Uses `sshist' to find the optimal number of bins in a histogram
 	% used for density estimation. Guaranteed to find a local (but not

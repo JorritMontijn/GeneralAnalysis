@@ -5,7 +5,10 @@ function matLowHigh = getCI(matSample,intDim,dblAlpha,boolPercentiles)
 	%Returns matrix with form [n x 2], where matLowHigh(n,1) gives lower
 	%bound and matLowHigh(n,2) gives upper bound for sample n in matSample,
 	%calculated over dimension intDim. If no dblAlpha is supplied, default
-	%is set to alpha=0.05
+	%is set to alpha=0.05.
+	%
+	%If boolPercentiles is false or not supplied, it returns the approximated standard error; if
+	%true, it returns the percentile confidence interval (default 95%)
 	%
 	%	By Jorrit Montijn, 16-01-15 (University of Amsterdam)
 	%	2020-05-25, Added percentile switch [by JM]
@@ -13,6 +16,7 @@ function matLowHigh = getCI(matSample,intDim,dblAlpha,boolPercentiles)
 	% determine which dimension to use
 	if nargin<2,intDim = find(size(matSample)~=1,1);end
 	if isempty(intDim),intDim = 1; end
+	if ndims(matSample) > 2,error([mfilename ':MaxDim2'],'Maximum ndims of sample matrix is 2');end
 	
 	% set alpha
 	if nargin<3 || isempty(dblAlpha)
