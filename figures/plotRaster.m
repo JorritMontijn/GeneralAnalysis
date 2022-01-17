@@ -40,9 +40,9 @@ function plotRaster(vecSpikes,vecTrialStarts,dblTrialDur,intPlotMaxSpikes)
 	hold off
 	
 	%set fig props
-	ylim([0 numel(vecTrialStarts)]);
+	ylim([0.5 numel(vecTrialStarts)+0.5]);
 	xlim([0 dblTrialDur]);
-	xlabel('Time from trial start (s)');
+	xlabel('Time after trial start (s)');
 	ylabel('Trial #');
 	fixfig;
 end
