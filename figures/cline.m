@@ -87,11 +87,13 @@ function h = cline(varargin)
 		%lines
 		if numel(vecC) == 3 && numel(vecX) ~= 3
 			cMap2 = repmat(vecC(:)',[intMaxL 1]);
+		elseif size(vecC,1) == numel(vecX) && size(vecC,2) == 3
+			cMap2 = vecC;
 		else
 			vecLinSpaceC = linspace(min(vecC),max(vecC),size(cMap,1));
-			cMap2 = cat(2,interp1(vecLinSpaceC,cMap(:,1),vecC)',...
-				interp1(vecLinSpaceC,cMap(:,2),vecC)',...
-				interp1(vecLinSpaceC,cMap(:,3),vecC)');
+			cMap2 = cat(2,interp1(vecLinSpaceC,cMap(:,1),vecC(:)')',...
+				interp1(vecLinSpaceC,cMap(:,2),vecC(:)')',...
+				interp1(vecLinSpaceC,cMap(:,3),vecC(:)')');
 		end
 		
 		set(hAx,'ColorOrder',cMap2);

@@ -20,8 +20,8 @@ function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
 	if nargout > 2
 		allN = nan(1,intIterMax);
 		allC = nan(1,intIterMax);
-		intCounter = 1;
 	end
+	intCounter = 1;
 	
 	%iterative line search
 	vecMinMaxN = [1 Nmax0];
@@ -31,10 +31,10 @@ function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
 		%get loss
 		[vecC,vecN] = findC(x,vecMinMaxN);
 		%save data?
+		intPoints = numel(vecC);
+		intPrevCounter = intCounter;
+		intCounter = intCounter + intPoints;
 		if nargout > 2
-			intPoints = numel(vecC);
-			intPrevCounter = intCounter;
-			intCounter = intCounter + intPoints;
 			allN(intPrevCounter:(intCounter-1)) = vecN;
 			allC(intPrevCounter:(intCounter-1)) = vecC;
 		else
