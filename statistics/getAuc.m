@@ -1,6 +1,6 @@
 % AUC                         Area under ROC
 %
-%     [A,Aci] = auc(vecTP,vecFP,alpha,flag,nboot,varargin);
+%	[dblAUC,Aci,Ase] = getAuc(vecTP,vecFP,alpha,flag,nboot,varargin);
 %
 %     INPUTS
 %     vecTP		- True positive values
