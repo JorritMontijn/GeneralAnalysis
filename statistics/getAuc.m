@@ -1,6 +1,6 @@
 % AUC                         Area under ROC
 %
-%	[dblAUC,Aci,Ase] = getAuc(vecTP,vecFP,alpha,flag,nboot,varargin);
+%	[dblAUC,Aci,Ase,pAuc] = getAuc(vecTP,vecFP,alpha,flag,nboot,varargin);
 %
 %     INPUTS
 %     vecTP		- True positive values
@@ -59,7 +59,7 @@
 %	  changed input syntax to accept vectors of TPs and FPs, changed subfunction name to
 %	  disambiguate from built-in roc function [by Jorrit Montijn, 2021-12-16]
 
-function [A,Aci,Ase] = getAuc(vecTP,vecFP,alpha,flag,nboot,varargin)
+function [A,Aci,Ase,pAuc] = getAuc(vecTP,vecFP,alpha,flag,nboot,varargin)
 	
 	if ~exist('flag','var')
 		flag = 'logit';
@@ -178,6 +178,12 @@ function [A,Aci,Ase] = getAuc(vecTP,vecFP,alpha,flag,nboot,varargin)
 			otherwise
 				error('Bad FLAG for AUC!')
 		end
+		
+		%p-value
+		m0 = A-0.5;
+		s0 = Ase;
+		zAuc = abs(m0/s0);
+		pAuc = normcdf(zAuc,'upper')*2;
 	end
 end
 function [tp,fp] = roc_local(data)
