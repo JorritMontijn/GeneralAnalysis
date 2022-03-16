@@ -66,7 +66,7 @@ Prec=1e-14;  % there are some rounding errors in matlab's binopdf, such that we 
 
 switch lower(Sided)
     case {'two','two, equal counts'}        
-        if all(p)==0.5 && strcmpi(Sided,'two');
+        if all(p==0.5) && strcmpi(Sided,'two');
             % to avoid the rounding problems mentioned above, use the equal counts method which is is theoretically identical in this special case and is not susceptible to this rounding error    
             Sided='two, equal counts';
         end
