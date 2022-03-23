@@ -26,6 +26,7 @@ function [matCounts,matValMeans,matValSDs,cellVals,cellIDs] = makeBins2(vecValsX
 	%	Created by Jorrit Montijn, based on makeBins()
 	
 	%% pre-alloc
+	assert(all(size(vecValsX) == size(vecValsY) == size(vecValsZ)),[mfilename ':InputError'],'X, Y and Z inputs have different shapes') ;
 	intValNumX = (numel(vecEdgesX)-1);
 	intValNumY = (numel(vecEdgesY)-1);
 	matCounts = zeros(intValNumY,intValNumX);
@@ -39,7 +40,7 @@ function [matCounts,matValMeans,matValSDs,cellVals,cellIDs] = makeBins2(vecValsX
 		dblStartEdgeX = vecEdgesX(intEdgeX);
 		dblStopEdgeX = vecEdgesX(intEdgeX+1);
 		%pre-select X bin
-		indTheseValsX = vecValsX > dblStartEdgeX & vecValsX < dblStopEdgeX;
+		indTheseValsX = vecValsX > dblStartEdgeX & vecValsX <= dblStopEdgeX;
 		vecTheseX = vecValsX(indTheseValsX);
 		vecTheseY = vecValsY(indTheseValsX);
 		vecTheseZ = vecValsZ(indTheseValsX);
@@ -49,7 +50,7 @@ function [matCounts,matValMeans,matValSDs,cellVals,cellIDs] = makeBins2(vecValsX
 			dblStopEdgeY = vecEdgesY(intEdgeY+1);
 			
 			%get values for bin
-			indTheseValsXY = vecTheseY > dblStartEdgeY & vecTheseY < dblStopEdgeY;
+			indTheseValsXY = vecTheseY > dblStartEdgeY & vecTheseY <= dblStopEdgeY;
 			vecTheseZValsXY = vecTheseZ(indTheseValsXY);
 			
 			%assign
