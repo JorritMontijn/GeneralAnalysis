@@ -16,6 +16,9 @@ function [handle,matX_final,matY_final,matZ_final,matC] = plotTube3D(vecX,vecY,v
 	if nargin < 4 || isempty(vecR)
 		vecR = 1;
 	end
+	if nargin < 5 || isempty(vecC)
+		vecC = linspace(0,1,numel(vecX));
+	end
 	if nargin < 6 || isempty(intPointsPerRadius)
 		intPointsPerRadius = 27;
 	end

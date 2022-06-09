@@ -1,5 +1,5 @@
 function varargout=tubeplot(curve,r,vecC,intPointsPerRadius,ct)
-	% Usage: [x,y,z]=tubeplot(curve,r,n,ct)
+	% Usage: [x,y,z]=tubeplot(curve,r,vecC,n,ct)
 	%
 	% Tubeplot constructs a tube, or warped cylinder, along
 	% any 3D curve, much like the build in cylinder function.
@@ -75,7 +75,8 @@ function varargout=tubeplot(curve,r,vecC,intPointsPerRadius,ct)
 	[buf,idx]=min(abs(dv(:,1))); nvec(idx)=1;
 	
 	xyz=repmat([0],[3,intPointsPerRadius+1,npoints+2]);
-	
+	c = zeros(1,npoints+2);
+	c(2:(npoints+1)) = vecC(1:npoints);
 	%precalculate cos and sing factors:
 	cfact=repmat(cos(linspace(0,2*pi,intPointsPerRadius+1)),[3,1]);
 	sfact=repmat(sin(linspace(0,2*pi,intPointsPerRadius+1)),[3,1]);
@@ -95,6 +96,8 @@ function varargout=tubeplot(curve,r,vecC,intPointsPerRadius,ct)
 	%finally, cap the ends:
 	xyz(:,:,1)=repmat(curve(:,1),[1,intPointsPerRadius+1]);
 	xyz(:,:,end)=repmat(curve(:,end),[1,intPointsPerRadius+1]);
+	c(1) = vecC(1);
+	c(end) = vecC(npoints);
 	
 	%,extract results:
 	x=squeeze(xyz(1,:,:));
@@ -102,10 +105,8 @@ function varargout=tubeplot(curve,r,vecC,intPointsPerRadius,ct)
 	z=squeeze(xyz(3,:,:));
 	if isempty(vecC)
 		c = [];
-	else
-		c=repmat(vecC,[size(x,1) 1]);
-		c = [c(:,1) c c(:,end)];
 	end
+	c = repmat(c,[intPointsPerRadius+1 1]);
 	
 	%... and plot:
 	if nargout == 0
@@ -131,4 +132,11 @@ function varargout=tubeplot(curve,r,vecC,intPointsPerRadius,ct)
 		varargout{4} = z;
 		varargout{5} = c;
 	end
+	
+	
+	%lighting
+	view(3)
+	axis tight
+	shading interp
+	camlight; lighting gouraud
 end
