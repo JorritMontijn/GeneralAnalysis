@@ -44,10 +44,10 @@ function varargout=tubeplot(curve,r,vecC,intPointsPerRadius,ct)
 		vecC = vecC*ones(1,size(curve,2));
 	end
 	
-	%Collapse points within 0.5 r of each other
+	%Collapse points within 0.5 r of each other [creates errors when creating closed tubes]
 	npoints=1;
 	for k=2:(size(curve,2)-1)
-		if norm(curve(:,k)-curve(:,npoints))>ct(k);
+		if 1;%norm(curve(:,k)-curve(:,npoints))>ct(k);
 			npoints=npoints+1;
 			curve(:,npoints)=curve(:,k);
 			r(npoints)=r(k);
@@ -132,11 +132,4 @@ function varargout=tubeplot(curve,r,vecC,intPointsPerRadius,ct)
 		varargout{4} = z;
 		varargout{5} = c;
 	end
-	
-	
-	%lighting
-	view(3)
-	axis tight
-	shading interp
-	camlight; lighting gouraud
 end
