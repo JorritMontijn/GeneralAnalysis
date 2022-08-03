@@ -26,7 +26,7 @@ function [matCounts,matValMeans,matValSDs,cellVals,cellIDs] = makeBins2(vecValsX
 	%	Created by Jorrit Montijn, based on makeBins()
 	
 	%% pre-alloc
-	assert(all(size(vecValsX) == size(vecValsY) == size(vecValsZ)),[mfilename ':InputError'],'X, Y and Z inputs have different shapes') ;
+	assert(all(size(vecValsX) == size(vecValsY) & size(vecValsY) == size(vecValsZ)),[mfilename ':InputError'],'X, Y and Z inputs have different shapes') ;
 	intValNumX = (numel(vecEdgesX)-1);
 	intValNumY = (numel(vecEdgesY)-1);
 	matCounts = zeros(intValNumY,intValNumX);
