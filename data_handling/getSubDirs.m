@@ -12,7 +12,7 @@ function cellPaths = getSubDirs(strMasterPath,intMaxDepth,cellExcludePathName)
 	
 	%set default values
 	if nargin < 2 || ~exist('intMaxDepth','var') || ~isnumeric(intMaxDepth),intMaxDepth = 2;end
-	if nargin < 3 ||  ~exist('cellExcludePathName','var') || isnumeric(cellExcludePathName),cellExcludePathName = {' '};end
+	if nargin < 3 ||  ~exist('cellExcludePathName','var') || isnumeric(cellExcludePathName),cellExcludePathName = {' ','.','..'};end
 	%initialize variables
 	intPathCounter = 1;
 	intIncrement = 100; %base increment of cell array elements; can be changed
@@ -78,5 +78,15 @@ function cellPaths = getSubDirs(strMasterPath,intMaxDepth,cellExcludePathName)
 	
 	%remove empty elements from the over-allocated cell array
 	cellPaths = cellPaths(1:intPathCounter);
+	
+	%remove excluded paths
+	indRemove = false(size(cellPaths));
+	for intEntry=1:numel(indRemove)
+		cellSplit = strsplit(cellPaths{intEntry},filesep);
+		if any(ismember(cellSplit,cellExcludePathName))
+			indRemove(intEntry) = true;
+		end
+	end
+	cellPaths(indRemove) = [];
 end
 

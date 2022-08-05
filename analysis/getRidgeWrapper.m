@@ -9,5 +9,6 @@ function dblR2 = getRidgeWrapper(dblLambda)
 	
 	[vecR2_Ridge_CV, sRidge] = doRidge_CV(gMatX, gMatY, gIntFolds, dblLambda);
 	dblR2 = -mean(vecR2_Ridge_CV); %negative to minimize
+	%fprintf('L%.0f, R2=%.3f\n',dblLambda,-dblR2)
 end
 
