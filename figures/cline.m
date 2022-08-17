@@ -42,8 +42,8 @@ function h = cline(varargin)
 		error('x and y must be numeric and conforming vectors');
 	end
 	if (nargin == 3 && (~isnumeric(vecZ) || ~isvector(vecZ) || length(vecX)~=length(vecZ))) || ...
-			(nargin == 4 && ~isempty(vecZ) && (~isnumeric(vecZ) || ~isvector(vecZ) || length(vecX)~=length(vecZ))) || ...
-			(nargin == 4 && (~isnumeric(vecC) || ~isvector(vecC) || (length(vecX)~=length(vecC) && length(vecC) ~= 3)))
+			(nargin == 4 && ~isempty(vecZ) && (~isnumeric(vecZ) || (~isvector(vecZ) && length(vecX)~=length(vecZ)))) || ...
+			(nargin == 4 && (~isnumeric(vecC) || (~isvector(vecC) && (length(vecX)~=length(vecC) && length(vecC) ~= 3))))
 		error('z (and cdata) must be a numeric vector and conforming to x and y');
 	end
 	
@@ -97,9 +97,9 @@ function h = cline(varargin)
 		end
 		
 		set(hAx,'ColorOrder',cMap2);
-		h = nan(1,intMaxL);
+		h = gobjects(1,intMaxL);
 		for i=1:intMaxL
-			h(i) = plot3(hAx,[vecX(i) vecX(i+1)],[vecY(i) vecY(i+1)],[vecZ(i) vecZ(i+1)]);
+			h(i) = plot3(hAx,[vecX(i) vecX(i+1)],[vecY(i) vecY(i+1)],[vecZ(i) vecZ(i+1)],'color',cMap2(i,:));
 		end
 	end
 	if ~boolOldHold,hold(hAx,'off');end
