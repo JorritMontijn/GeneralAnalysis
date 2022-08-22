@@ -31,8 +31,9 @@ vecCounts = accumarray(b,1);
 cellDuplicatedNames = cellNames(vecCounts>1);
 
 %set list to ignore
-cellIgnore = {'Contents.m','runExampleZETA.m','runCreatePreDataAggregate.m','getTunedStimDetectionNeurons',...
-	'getOr.m','getIFR.m','export_fig.m','countUnique.m','clusterAverage.m','buildMultiSesAggregate.m'};
+cellIgnore = {'backup','Untitled','Psychtoolbox','Contents.m','contents.m',...
+	'runExampleZETA.m','runCreatePreDataAggregate.m','getTunedStimDetectionNeurons','plotAsProbe.m','best_fit_line.m'...
+	'getOr.m','getIFR.m','export_fig.m','circ_dist','countUnique.m','clusterAverage.m','buildMultiSesAggregate.m'};
 indRem = contains(cellDuplicatedNames,cellIgnore);
 cellDuplicatedNames(indRem) = [];
 
@@ -42,6 +43,7 @@ for intDuplicateName = 1:numel(cellDuplicatedNames)
 	%get all copies
 	cellCopies = which(cellDuplicatedNames{intDuplicateName},'-all');
 	cellCopies(contains(cellCopies,matlabroot)) = [];
+	cellCopies(contains(cellCopies,cellIgnore)) = [];
 	
 	%compare files
 	cellMD5 = cell(size(cellCopies));
@@ -51,7 +53,7 @@ for intDuplicateName = 1:numel(cellDuplicatedNames)
 	
 	%check if they're all identical
 	cellUniques = unique(cellMD5);
-	if numel(cellUniques) ~= 1
+	if numel(cellUniques) ~= 1 && numel(cellCopies) > 1
 		fprintf('\nFile %s has multiple copies with different content. MD5 hashes:\n',cellDuplicatedNames{intDuplicateName});
 		indIsProblematic(intDuplicateName) = true;
 		for intFile=1:numel(cellCopies)
