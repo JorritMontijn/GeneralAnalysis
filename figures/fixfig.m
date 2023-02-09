@@ -26,13 +26,6 @@ function fixfig(handle,boolMakeActive,dblLineWidth)
 	
 	%remove box
 	set(handle, 'box','off');
-	
-	%move axes
-	if isprop(handle,'XLim')
-		drawnow;
-		offsetaxes(handle);
-	end
-	
 	drawnow;
 	dblFontSize=14; %change the figure font size
 	try 
