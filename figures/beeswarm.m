@@ -35,7 +35,7 @@ addOptional(p,'sort_style','nosort')
 addOptional(p,'corral_style','none')
 addOptional(p,'dot_size',11/sqrt(length(x)),validScalarPosNum)
 addOptional(p,'overlay_style',false)
-addOptional(p,'use_current_axes',false)
+addOptional(p,'use_current_axes',true)
 addOptional(p,'colormap','lines')
 addOptional(p,'MarkerFaceColor','')
 addOptional(p,'MarkerFaceAlpha',.5)
@@ -52,7 +52,7 @@ nxloc=512; % resolution for optimization
 chanwid = .9; % percent width of channel to use
 yl = [min(y) max(y)]; % default y-limits
 asp_rat = 1;
-keep_hold = false;
+keep_hold = ishold(gca);
 
 % get aspect ratio for a figure window
 if isfinite(p.Results.dot_size)
