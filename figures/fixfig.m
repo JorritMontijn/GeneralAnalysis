@@ -47,7 +47,6 @@ function fixfig(handle,boolMakeActive,dblLineWidth)
 	catch
 		%not a cartesian plot
 	end
-	title(get(get(handle,'title'),'string'),'FontSize',14);
 	set(handle,'FontSize',dblFontSize,'Linewidth',dblLineWidth); %set grid line width and change font size of x/y ticks
 	set(handle,'TickDir', 'out');
 	if ~strcmp(get(get(handle,'Children'),'Type'),'image')
