@@ -16,7 +16,7 @@ function c = greenwhite(m)
 	if nargin < 1, m = size(get(gcf,'colormap'),1); end
 	
 	r = 1-linspace(0,1,m)';
-	g = ones(m,1);
+	g = linspace(1,0.5,m)';
 	b = 1-linspace(0,1,m)';
 	
 	c = [r g b];
