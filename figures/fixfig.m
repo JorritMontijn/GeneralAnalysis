@@ -1,4 +1,4 @@
-function fixfig(handle,boolMakeActive,dblLineWidth)
+function fixfig(handle,boolMakeActive,dblLineWidth,dblFontSize)
 	
 	%inputs
 	if ~exist('handle','var') || isempty(handle)
@@ -9,6 +9,9 @@ function fixfig(handle,boolMakeActive,dblLineWidth)
 	end
 	if ~exist('dblLineWidth','var') || isempty(dblLineWidth)
 		dblLineWidth=2;
+	end
+	if ~exist('dblFontSize','var') || isempty(dblFontSize)
+		dblFontSize=14; %change the figure font size
 	end
 	
 	%make active
@@ -22,13 +25,13 @@ function fixfig(handle,boolMakeActive,dblLineWidth)
 	if isa(handle,'matlab.ui.Figure')
 		for intChild=1:numel(handle.Children)
 			if isfield(handle.Children(intChild),'Axes')
-				fixfig(handle.Children(intChild).Axes,boolMakeActive,dblLineWidth);
+				fixfig(handle.Children(intChild).Axes,boolMakeActive,dblLineWidth,dblFontSize);
 			elseif isfield(handle.Children(intChild),'Colorbar')
-				fixfig(handle.Children(intChild).Colorbar,boolMakeActive,dblLineWidth);
+				fixfig(handle.Children(intChild).Colorbar,boolMakeActive,dblLineWidth,dblFontSize);
 			elseif isaxes(handle.Children(intChild))
-				fixfig(handle.Children(intChild),boolMakeActive,dblLineWidth);
+				fixfig(handle.Children(intChild),boolMakeActive,dblLineWidth,dblFontSize);
 			elseif isa(handle.Children(intChild),'matlab.graphics.illustration.ColorBar')
-				fixfig(handle.Children(intChild),boolMakeActive,dblLineWidth);
+				fixfig(handle.Children(intChild),boolMakeActive,dblLineWidth,dblFontSize);
 			end
 		end
 		return;
@@ -40,10 +43,9 @@ function fixfig(handle,boolMakeActive,dblLineWidth)
 	end
 	
 	drawnow;
-	dblFontSize=14; %change the figure font size
 	try
-		xlabel(get(handle,'xlabel'),'FontSize',dblFontSize); %set x-label and change font size
-		ylabel(get(handle,'ylabel'),'FontSize',dblFontSize);%set y-label and change font size
+		set(get(handle,'xlabel'),'FontSize',dblFontSize); %set x-label and change font size
+		set(get(handle,'ylabel'),'FontSize',dblFontSize);%set y-label and change font size
 	catch
 		%not a cartesian plot
 	end
