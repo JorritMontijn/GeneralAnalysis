@@ -3,7 +3,7 @@ function [varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(v
 	%Syntax: [varDataOut,vecUnique,vecCounts,cellSelect,vecRepetition] = label2idx(varData)
 	
 	varDataOut = nan(size(varData));
-	vecUnique = unique(varData);
+	vecUnique = uniquetol(varData,1e-10);
 	vecCounts = zeros(size(vecUnique));
 	vecIdx = 1:length(vecUnique);
 	cellSelect = cell(1,length(vecUnique));
