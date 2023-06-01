@@ -27,6 +27,11 @@ function [matPeakDomain,indKeepPeaks] = mergepeaks(vecT,vecV,vecP)
 	%Dependencies:
 	%findtrough.m (embedded below)
 	
+	%flatten
+	vecT = vecT(:);
+	vecV = vecV(:);
+	vecP = vecP(:);
+	
 	%merge until prominence no longer drops from merges
 	vecP_T = vecT(vecP);
 	vecP_L = vecP;
