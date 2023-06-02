@@ -46,7 +46,7 @@ function [matPeakDomain,indKeepPeaks] = mergepeaks(vecT,vecV,vecP)
 		%% merge peaks
 		%find highest unprocessed peak
 		dblHeight = max(vecP_V(~indProcessed));
-		intPeak = find(vecP_V==dblHeight);
+		intPeak = find(vecP_V==dblHeight & ~indProcessed,1);
 		intPeakLoc = vecP_L(intPeak);
 		dblPeakT = vecP_T(intPeak);
 		
