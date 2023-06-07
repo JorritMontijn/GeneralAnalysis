@@ -86,6 +86,10 @@ function [vecMean,vecSEM,vecWindowBinCenters,matPET] = doPEP(vecTimestamps,vecTr
 		end
 	elseif intType == 2
 		%% input is trace
+		if std(diff(vecTimestamps))/mean(abs(diff(vecTimestamps))) > 1e-6
+			warning([mfilename ':VariableFramerate'],'Variable framerate can lead to unusual behaviour! Please be cautious and double-check this is what you want')
+		end
+		
 		%get window
 		if isfield(sOptions,'vecWindow'), vecWindow = sOptions.vecWindow;else, vecWindow = [-1 3];end
 		%get event times
