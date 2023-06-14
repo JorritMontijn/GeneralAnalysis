@@ -28,18 +28,28 @@ function [matPET,vecWindowC] = doPET(vecTime,vecVals,vecEvents,vecWindow)
 			if isnan(vecMeans(1))
 				%find value prior to start
 				intPreT = find(vecTime>=vecThisWindow(1),1)-1;
-				if isempty(intPreT) || intPreT<1,intPreT=1;end
-				indNan = cat(1,false,indNan(:));
-				vecTempT = cat(1,vecTime(intPreT)-vecEvents(intEvent),vecTempT(:));
-				vecMeans = cat(1,vecVals(intPreT),vecMeans(:));
+				if isempty(intPreT) || intPreT<1
+					indNan = cat(1,false,indNan(:));
+					vecTempT = cat(1,vecWindow(1),vecTempT(:));
+					vecMeans = cat(1,vecVals(1),vecMeans(:));
+				else
+					indNan = cat(1,false,indNan(:));
+					vecTempT = cat(1,vecTime(intPreT)-vecEvents(intEvent),vecTempT(:));
+					vecMeans = cat(1,vecVals(intPreT),vecMeans(:));
+				end
 			end
 			if isnan(vecMeans(end))
 				%find value after to end
 				intPostT = find(vecTime>vecThisWindow(end),1);
-				if isempty(intPostT),intPostT=numel(vecTime);end
-				indNan(end+1) = false;
-				vecTempT(end+1) = vecTime(intPostT)-vecEvents(intEvent);
-				vecMeans(end+1) = vecVals(intPostT);
+				if isempty(intPostT)
+					indNan(end+1) = false;
+					vecTempT(end+1) = vecWindow(end);
+					vecMeans(end+1) = vecVals(end);
+				else
+					indNan(end+1) = false;
+					vecTempT(end+1) = vecTime(intPostT)-vecEvents(intEvent);
+					vecMeans(end+1) = vecVals(intPostT);
+				end
 			end
 			matPET(intEvent,:) = interp1(vecTempT(~indNan),vecMeans(~indNan),vecWindowC);
 		else
