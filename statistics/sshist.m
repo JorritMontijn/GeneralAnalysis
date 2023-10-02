@@ -63,15 +63,14 @@ function [optN, C, N] = sshist(x,N)
 	% Computation of the Cost Function
 	Cs = zeros(length(N),SN);
 	for i = 1: length(N)
-		shift = linspace(0,D(i),SN);
+		dblBinSize = D(i);
+		intBinNum = N(i);
+		shift = linspace(0,dblBinSize,SN);
 		for p = 1 : SN
-			edges = linspace(x_min+shift(p)-D(i)/2,...
-				x_max+shift(p)-D(i)/2,N(i)+1);   % Bin edges
+			edges = linspace(x_min+shift(p)-dblBinSize/2,...
+				x_max+shift(p)-dblBinSize/2,intBinNum+1);   % Bin edges
 			ki = histc(x,edges);               % Count # of events in bins
-			ki = ki(1:end-1);
-			k = mean(ki);                      % Mean of event count
-			v = sum( (ki-k).^2 )/N(i);         % Variance of event count
-			Cs(i,p) = ( 2*k - v ) / D(i)^2;    % The Cost Function
+			Cs(i,p) = sscost(ki,dblBinSize,intBinNum);
 		end
 	end
 	C = mean(Cs,2);
@@ -81,4 +80,10 @@ function [optN, C, N] = sshist(x,N)
 	optN = N(idx);                         % Optimal number of bins
 	%optD = D(idx);                         % *Optimal binwidth
 	%edges = linspace(x_min,x_max,N(idx));  % Optimal segmentation
+end
+function dblCs = sscost(ki,dblBinSize,intBinNum)
+	ki = ki(1:end-1);
+	k = mean(ki);                      % Mean of event count
+	v = sum( (ki-k).^2 )/intBinNum;         % Variance of event count
+	dblCs = ( 2*k - v ) / dblBinSize^2;    % The Cost Function
 end
