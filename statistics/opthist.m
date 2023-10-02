@@ -26,6 +26,7 @@ function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
 	%iterative line search
 	vecMinMaxN = [1 Nmax0];
 	boolConverged = false;
+	[vecC,vecN] = findC(x,vecMinMaxN);
 	while ~boolConverged && intCounter < intIterMax && max(vecMinMaxN) < intFD*1000
 		
 		%get loss
