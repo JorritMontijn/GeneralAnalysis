@@ -1,16 +1,21 @@
-function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
-	% [optN, optC, allN, allC] = opthist(x,Nmax,intIterMax)
+function [optN, dblC, allN, allC] = opthist(x,N0,Nmax,intIterMax)
+	% [optN, optC, allN, allC] = opthist(x,N0,Nmax,intIterMax)
 	%
 	% Uses `sshist' to find the optimal number of bins in a histogram
 	% used for density estimation. Guaranteed to find a local (but not
 	% necessarily global) minimum.
 	
-	if ~exist('Nmax','var') || isempty(Nmax0)
+	if ~exist('N0','var') || isempty(N0)
 		%friedman-draconis
 		dblIQR = iqr(x);
 		h=2*dblIQR*(numel(x)^-1/3);
 		intFD=round(range(x)/h);
-		Nmax0 = intFD*2;
+		N0 = intFD*2;
+	else
+		intFD = N0/2;
+	end
+	if ~exist('Nmax','var') || isempty(Nmax)
+		Nmax = 1e9;
 	end
 	if ~exist('IterMax','var') || isempty(intIterMax)
 		intIterMax = 1000;
@@ -24,7 +29,7 @@ function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
 	intCounter = 1;
 	
 	%iterative line search
-	vecMinMaxN = [1 Nmax0];
+	vecMinMaxN = [1 N0];
 	boolConverged = false;
 	[vecC,vecN] = findC(x,vecMinMaxN);
 	while ~boolConverged && intCounter < intIterMax && max(vecMinMaxN) < intFD*1000
@@ -42,7 +47,7 @@ function [optN, dblC, allN, allC] = opthist(x,Nmax0,intIterMax)
 			intCounter = intCounter + intPoints;
 		end
 		
-		if range(vecN) < 10
+		if range(vecN) < 10 || min(vecC) >= Nmax
 			boolConverged = true;
 			break;
 		end
