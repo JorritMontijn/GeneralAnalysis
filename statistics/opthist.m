@@ -5,6 +5,7 @@ function [optN, dblC, allN, allC] = opthist(x,N0,Nmax,intIterMax)
 	% used for density estimation. Guaranteed to find a local (but not
 	% necessarily global) minimum.
 	
+	x=unique(x);
 	if ~exist('N0','var') || isempty(N0)
 		%friedman-draconis
 		dblIQR = iqr(x);
@@ -18,9 +19,11 @@ function [optN, dblC, allN, allC] = opthist(x,N0,Nmax,intIterMax)
 		Nmax = 1e9;
 	end
 	if ~exist('IterMax','var') || isempty(intIterMax)
-		intIterMax = 1000;
+		intIterMax = 100;
 	end
-	
+	if N0 > Nmax
+		N0=Nmax;
+	end
 	%pre-allocate output if necessary
 	if nargout > 2
 		allN = nan(1,intIterMax);
