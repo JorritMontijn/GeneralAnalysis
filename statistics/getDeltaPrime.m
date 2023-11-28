@@ -28,7 +28,7 @@ function dblDeltaPrime = getDeltaPrime(vecResp,vecAngles,boolBiasCorrection)
 	end
 	
 	%% calculate
-	[vecOriIdx,vecUniqueOris] = label2idx(vecAngles);
+	[vecOriIdx,vecUniqueOris] = val2idx(vecAngles);
 	intReps = numel(vecOriIdx)/numel(vecUniqueOris);
 	intNumOri = max(vecOriIdx);
 	matDelta2 = nan(intNumOri,intNumOri,size(vecResp,1));

@@ -142,6 +142,9 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 				clusters(cc).map = zeros(nsamps,1);
 				%get quantile position of cluster in random data
 				clusters(cc).p = 1-sum(thisclustsum>J)/(numel(J)+1);
+				clusters(cc).pmap = pmap;
+				clusters(cc).tmap = tmap;
+				clusters(cc).clustsum = thisclustsum;
 			else
 				for j = clustix
 					buf = zeros(nsamps,1);
@@ -149,20 +152,29 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 					cc = cc+1;
 					clusters(cc).map = buf;
 					%get quantile position of cluster in random data
-					clusters(cc).p = 1-sum(clustsum(i)>J)/(numel(J)+1);
+					clusters(cc).p = 1-sum(clustsum(j)>J)/(numel(J)+1);
+					clusters(cc).pmap = pmap;
+					clusters(cc).tmap = tmap;
+					clusters(cc).clustsum = clustsum(j);
 				end
 			end
 		else
 			cc = cc+1;
 			clusters(cc).map = zeros(nsamps,1);
 			clusters(cc).p = 1;
+			clusters(cc).pmap = pmap;
+			clusters(cc).tmap = tmap;
+			clusters(cc).clustsum = 0;
 		end
 	else
 		cc = cc+1;
 		clusters(cc).map = zeros(nsamps,1);
 		clusters(cc).p = 1;
+		clusters(cc).pmap = pmap;
+		clusters(cc).tmap = tmap;
+		clusters(cc).clustsum = 0;
 	end
-	
+	clusters.cluscrit=cluscrit;
 	
 	if figon
 		
@@ -176,9 +188,11 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 		plot(t,conddiff,'k','LineWidth',2),hold on
 		Y = get(gca,'YLim');
 		for j = 1:length(clusters)
-			st = find(clusters.map,1,'first');
-			ed = find(clusters.map,1,'last');
-			fill([t(st) t(st) t(ed) t(ed)],[Y(1) Y(2) Y(2) Y(1)],'g')
+			st = find(clusters(j).map,1,'first');
+			ed = find(clusters(j).map,1,'last');
+			if ~isempty(st) & ~isempty(ed)
+				fill([t(st) t(st) t(ed) t(ed)],[Y(1) Y(2) Y(2) Y(1)],'g')
+			end
 		end
 		hold on,plot(t,conddiff,'k','LineWidth',2)
 		title('Significant Clusters')
@@ -205,5 +219,5 @@ function semap = makesemap(minval,maxval)
 	
 	return
 end
-	
-	
+
+
