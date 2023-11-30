@@ -174,7 +174,6 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 		clusters(cc).tmap = tmap;
 		clusters(cc).clustsum = 0;
 	end
-	clusters.cluscrit=cluscrit;
 	
 	if figon
 		
