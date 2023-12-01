@@ -3,7 +3,7 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 	%clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 	%
 	%Inputs:
-	%cond1 and cond2: 2d matrices with dimensions [time, electrode]
+	%cond1 and cond2: 2d matrices with dimensions [trials, time]
 	%	Any missing data should be converted to NaNs before running this script
 	%	These are the two conditions you want to compare e.g. figure and ground
 	%reps = number of bootstraps (default=1000)
@@ -43,12 +43,12 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 	%7: Mark these clusters in a graph
 	
 	%% check inputs
-	if nargin < 3
+	if nargin < 3 || isempty(reps)
 		reps = 1000;
 	elseif reps < 2
 		error([mfilename ':InputError'],'Number of bootstraps cannot be <2');
 	end
-	if nargin<4
+	if nargin<4 || isempty(t)
 		figon = false;
 		t = [];
 	elseif length(t) == size(cond1,1)
@@ -59,11 +59,14 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 	end
 	
 	%% data dimensions
-	nsamps = size(cond1,1);
-	nelectrodes = size(cond1,2);
+	ntrials = size(cond1,1);
+	nsamps = size(cond1,2);
 	
 	%% Make a joint distribution contiang the data from both conditions
-	J = cat(3,cond1,cond2);
+	matAggregateTrials = cat(1,cond1,cond2);
+	intTrials1 = size(cond1,1);
+	intTrials2 = size(cond2,1);
+	intTotTrials = intTrials1+intTrials2;
 	
 	%% permutation stats
 	tmax = zeros(reps,1);
@@ -71,18 +74,14 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 		
 		%Randomly permute the conditions
 		%E.g. either swap or do not swap the conditions for each electrode
-		c = randi(2,nelectrodes,1);
-		
-		%Draw a new set of conditions from the joint distribution
-		c1 = zeros(size(cond1));
-		c2 = zeros(size(cond2));
-		for n = 1:nelectrodes
-			c1(:,n) = squeeze(J(:,n,c(n)));
-			c2(:,n) = squeeze(J(:,n,3-c(n)));
-		end
-		
+		vecUseRand1 = randi(intTotTrials,[1,intTrials1]);
+		vecUseRand2 = randi(intTotTrials,[1,intTrials2]);
+			
+		matTrace1_Rand = matAggregateTrials(vecUseRand1,:);
+		matTrace2_Rand = matAggregateTrials(vecUseRand2,:);
+			
 		%PErform the t-test
-		[~,pmap,~,stats] = ttest(c1,c2,'dim',2);
+		[~,pmap,~,stats] = ttest2(matTrace1_Rand,matTrace2_Rand,'dim',1);
 		tmap = stats.tstat;
 		
 		%Threshold with the pmap into positive clusters
@@ -112,7 +111,7 @@ function clusters = ez_clusterstat_time(cond1,cond2,reps,t)
 	
 	%% Now cluster the real data and check to see whether each cluster was significant
 	%PErform the t-test
-	[~,pmap,~,stats] = ttest(cond1,cond2,'dim',2);
+	[~,pmap,~,stats] = ttest2(cond1,cond2,'dim',1);
 	tmap = stats.tstat;
 	
 	%% Cluster level correction
