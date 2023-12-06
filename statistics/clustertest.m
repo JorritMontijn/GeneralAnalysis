@@ -128,7 +128,7 @@ function clusters = ez_clusterstat_time(matCond1,matCond2,intReps,vecT,dblCluste
 	%% Calculate the maximum cluster statistic
 	J = sort(tmax);
 	%95th percentile for one-tailed test
-	percentile = round(intReps.*(1-dblClusterCutOff));
+	percentile = min(intReps,max(1,round(intReps.*(1-dblClusterCutOff))));
 	%This is the critical vlaue of maximum t
 	cluscrit = J(percentile);
 	
@@ -156,7 +156,7 @@ function clusters = ez_clusterstat_time(matCond1,matCond2,intReps,vecT,dblCluste
 		end
 		
 		%Clusters larger than threshold
-		clustix = find(abs(clustsum)>cluscrit);
+		clustix = find(abs(clustsum)>=cluscrit);
 		if ~isempty(clustsum)
 			if isempty(clustix)
 				[thisclustsum,clustix] = max(abs(clustsum));
