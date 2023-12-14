@@ -19,7 +19,7 @@ if (mod(m,2) == 0)
     % From [0 0 1] to [1 1 1], then [1 1 1] to [1 0 0];
     m1 = m*0.5;
     r = (0:m1-1)'/max(m1-1,1);
-    b = r;
+    b = 0*r;
     r = [r; ones(m1,1)];
     b = [b; flipud(b)];
     g = flipud(r);
@@ -27,7 +27,7 @@ else
     % From [0 0 1] to [1 1 1] to [1 0 0];
     m1 = floor(m*0.5);
     r = (0:m1-1)'/max(m1,1);
-    b = r;
+    b = 0*r;
     r = [r; ones(m1+1,1)];
     b = [b; 1; flipud(b)];
     g = flipud(r);

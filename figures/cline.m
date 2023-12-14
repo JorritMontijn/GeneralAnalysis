@@ -35,8 +35,16 @@ function h = cline(varargin)
 	end
 	vecX = varargin{1};
 	vecY = varargin{2};
-	if numel(varargin) > 2,vecZ = varargin{3}; end
-	if numel(varargin) > 3,vecC = varargin{4}; end
+	vecZ = varargin{end-1};
+	vecC = varargin{end};
+
+	% fill arrays if none supplied
+	if numel(varargin) < 3
+		vecY = zeros(size(vecX));
+	end
+	if numel(varargin) < 4
+		vecZ = zeros(size(vecX));
+	end
 	
 	if ~isnumeric(vecX) || ~isnumeric(vecY) || ~isvector(vecX) || ~isvector(vecY) || length(vecX)~=length(vecY)
 		error('x and y must be numeric and conforming vectors');
@@ -47,15 +55,6 @@ function h = cline(varargin)
 		error('z (and cdata) must be a numeric vector and conforming to x and y');
 	end
 	
-	% fill arrays if none supplied
-	if nargin == 2
-		vecC = vecY;
-		vecY = zeros(size(vecX));
-		vecZ = zeros(size(vecX));
-	elseif nargin == 3
-		vecC = vecZ;
-		vecZ = zeros(size(vecX));
-	end
 	
 	%fill empties
 	if isempty(vecY)
