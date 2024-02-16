@@ -1,5 +1,32 @@
+function [cellHeader,cellData] = tsvread(strFile)
+	%tsvread Reads tsv files
+	%   [cellHeader,cellData] = tsvread(strFile)
+	
+	%read all lines
+	fid = fopen( strFile, 'r' );
+	cellLines = textscan( fid, '%s', 'delimiter', '\n');
+	cellLines = cellLines{1};
+	fclose(fid);
+	intLineNum = size(cellLines,1);
+	
+	%get header
+	cellSplit = strsplit(cellLines{1}, '\t');
+	indRem = isempty(cellSplit);
+	cellSplit(indRem)=[];
+	cellHeader = cellSplit;
+	intColumnNum = numel(cellHeader);
+	
+	%read data
+	cellData = cell(intLineNum-1,intColumnNum);
+	for i=2:intLineNum
+		cellSplitData = strsplit(cellLines{i}, '\t');
+		cellSplitData(indRem) = [];
+		cellData(i-1,:) = cellSplitData;
+	end
+end
 
-function varargout = tsvread( varargin )
+%% OLD
+function varargout = tsvread_old( varargin )
 	%[data, header, raw] = tsvread( file ) reads in text file with tab-seperated variables. default value for data is nan.
 	%alternative input/output option is suppluying header strings
 	%[col1, col2, col3, ..., header, raw] = tsvread( file, header1, header2, header3, ... )
@@ -84,3 +111,4 @@ function varargout = tsvread( varargin )
 	end
 	varargout{end+1} = header(:,j);
 	varargout{end+1} = raw(:,j);
+end
