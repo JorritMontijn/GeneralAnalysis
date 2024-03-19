@@ -33,7 +33,7 @@ cellDuplicatedNames = cellNames(vecCounts>1);
 %set list to ignore
 cellIgnore = {'backup','Untitled','Psychtoolbox','Contents.m','contents.m',...
 	'runExampleZETA.m','runCreatePreDataAggregate.m','getTunedStimDetectionNeurons','plotAsProbe.m','best_fit_line.m'...
-	'getOr.m','getIFR.m','export_fig.m','circ_dist','countUnique.m','clusterAverage.m','buildMultiSesAggregate.m','getMultiScaleDeriv.m'};
+	'getOr.m','getIFR.m','export_fig.m','circ_dist','countUnique.m','clusterAverage.m','buildMultiSesAggregate.m'};
 indRem = contains(cellDuplicatedNames,cellIgnore);
 cellDuplicatedNames(indRem) = [];
 
