@@ -18,7 +18,7 @@ function [dblClustP,sClustPos,sClustNeg] = clustertest(matCond1,matCond2,intReps
 	sClustNeg = ez_clusterstat_time(matCond2,matCond1,intReps,vecT,dblClusterCutOff);
 	vecPosP = cell2vec({sClustPos.p});
 	vecNegP = cell2vec({sClustNeg.p});
-	dblClustP=min(1,min(bonf_holm([min(vecPosP) min(vecNegP)])));
+	dblClustP=min(1,min([min(vecPosP) min(vecNegP)]*2)); %x2 for Bonferroni correction
 end
 function clusters = ez_clusterstat_time(matCond1,matCond2,intReps,vecT,dblClusterCutOff)
 	%ez_clusterstat_time Cluster-based statistical test for paired data; Maris and Oostenveld (2007)
@@ -219,66 +219,4 @@ function clusters = ez_clusterstat_time(matCond1,matCond2,intReps,vecT,dblCluste
 		title('Significant Clusters')
 		
 	end
-end
-
-%% Colormap generation
-function semap = makesemap(minval,maxval)
-	
-	%MAke a suppression/enhancement colormap
-	cspace = linspace(minval,maxval,64);
-	
-	%Find zero-point
-	zp = find(cspace>=0,1,'first');
-	semap = zeros(64,3)+0.5;
-	semap(zp:end,1) = linspace(0.5,1,64-zp+1)';
-	semap(zp:end,2) = linspace(0.5,0,64-zp+1)';
-	semap(zp:end,3) = linspace(0.5,0,64-zp+1)';
-	%All pojts below scale from grey to blue
-	semap(1:zp,1) = linspace(0,0.5,zp)';
-	semap(1:zp,2) = linspace(0,0.5,zp)';
-	semap(1:zp,3) = linspace(1,0.5,zp)';
-	
-	return
-end
-%% bonf-holm
-function [corrected_p, h]=bonf_holm(pvalues,alpha)
-	
-	if nargin<1,
-		error('You need to provide a vector or matrix of p-values.');
-	else
-		if ~isempty(find(pvalues<0,1)),
-			error('Some p-values are less than 0.');
-		elseif ~isempty(find(pvalues>1,1)),
-			fprintf('WARNING: Some uncorrected p-values are greater than 1.\n');
-		end
-	end
-	
-	if nargin<2,
-		alpha=.05;
-	elseif alpha<=0,
-		error('Alpha must be greater than 0.');
-	elseif alpha>=1,
-		error('Alpha must be less than 1.');
-	end
-	
-	s=size(pvalues);
-	if isvector(pvalues),
-		if size(pvalues,1)>1,
-			pvalues=pvalues';
-		end
-		[sorted_p sort_ids]=sort(pvalues);
-	else
-		[sorted_p sort_ids]=sort(reshape(pvalues,1,prod(s)));
-	end
-	[dummy, unsort_ids]=sort(sort_ids); %indices to return sorted_p to pvalues order
-	
-	m=length(sorted_p); %number of tests
-	mult_fac=m:-1:1;
-	cor_p_sorted=sorted_p.*mult_fac;
-	cor_p_sorted(2:m)=max([cor_p_sorted(1:m-1); cor_p_sorted(2:m)]); %Bonferroni-Holm adjusted p-value
-	corrected_p=cor_p_sorted(unsort_ids);
-	corrected_p=reshape(corrected_p,s);
-	h=corrected_p<alpha;
-	
-	
 end
