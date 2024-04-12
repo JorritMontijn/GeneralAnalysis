@@ -31,7 +31,7 @@ function h = swarmchart(varargin)
 	%       y=randn(1000,1);
 	%       SWARMCHART(x,y)
 	
-	%wrapper for export_fig
+	%wrapper for swarmchart
 	cellOthers= which(mfilename,'-all');
 	strThisFile = mfilename('fullpath');
 	indOtherFiles = ~contains(cellOthers,strThisFile);
@@ -60,6 +60,14 @@ function h = swarmchart(varargin)
 			validateJitterable(varargin);
 		end
 		
+		%remove JitterWidth
+		intIsJitter = find(strcmp(varargin,'JitterWidth'));
+		if ~isempty(intIsJitter)
+			dblUseJitter = varargin{intIsJitter+1};
+			varargin(intIsJitter:(intIsJitter+1))=[];
+		else
+			dblUseJitter = [];
+		end
 		try
 			obj = scatter(varargin{:});
 		catch ME
@@ -86,9 +94,11 @@ function h = swarmchart(varargin)
 					jitwidth(i) = .9 * min(diff(uniquex));
 				end
 			end
-			minjitwidth = min(jitwidth);
+			if isempty(dblUseJitter)
+				dblUseJitter = min(jitwidth);
+			end
 			
-			obj.XData = obj.XData + rand(size(obj.XData ))*minjitwidth-minjitwidth/2;
+			obj.XData = obj.XData + rand(size(obj.XData ))*dblUseJitter-dblUseJitter/2;
 			
 		end
 		
