@@ -61,7 +61,7 @@ function h = swarmchart(varargin)
 		end
 		
 		%remove JitterWidth
-		intIsJitter = find(strcmp(varargin,'JitterWidth'));
+		intIsJitter = find(strcmpi(varargin,'JitterWidth'));
 		if ~isempty(intIsJitter)
 			dblUseJitter = varargin{intIsJitter+1};
 			varargin(intIsJitter:(intIsJitter+1))=[];

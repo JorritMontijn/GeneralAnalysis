@@ -21,8 +21,8 @@ function h = cline(varargin)
 	
 	% Check input arguments
 	narginchk(2, 6)
-	if isaxes(varargin{1})
-		hAx = varargin{1};
+	if isaxes(varargin{1}(1)) || ishandle(varargin{1}(1))
+		hAx = varargin{1}(1);
 		varargin(1) = [];
 	else
 		hAx = gca;
@@ -137,7 +137,7 @@ function h = clineOld(x, y, z, cdata)
 	%
 	% Author & Version
 	% ================
-	% S. Hölz, TU-Berlin, seppel_mit_ppATweb.de
+	% S. H?lz, TU-Berlin, seppel_mit_ppATweb.de
 	% V 1.0, 16.4.2007
 	% Created using Matlab 7.0.4 (SP2)
 	%
