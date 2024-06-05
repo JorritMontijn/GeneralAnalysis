@@ -21,7 +21,7 @@ function h = cline(varargin)
 	
 	% Check input arguments
 	narginchk(2, 6)
-	if isaxes(varargin{1}(1)) || ishandle(varargin{1}(1))
+	if numel(varargin{1}) == 1 && (isaxes(varargin{1}(1)) || ishandle(varargin{1}(1)))
 		hAx = varargin{1}(1);
 		varargin(1) = [];
 	else
